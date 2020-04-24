@@ -8,46 +8,60 @@ description: "Add 150 character max description"
 urlFragment: "update-this-to-unique-url-stub"
 ---
 
-# Official Microsoft Sample
+# Request-a-team App Template
 
-<!-- 
-Guidelines on README format: https://review.docs.microsoft.com/help/onboard/admin/samples/concepts/readme-template?branch=master
+| [Documentation](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Home) | [Deployment guide](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Deployment-Guide) | [Architecture](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Solution-Overview) |
+| ---- | ---- | ---- |
 
-Guidance on onboarding samples to docs.microsoft.com/samples: https://review.docs.microsoft.com/help/onboard/admin/samples/process/onboarding?branch=master
+Enterprise organizations have expressed a need to standardize and to promote best practices around the creation of new team instances. The **Request-a-team** App Template supports these goals by providing a framework that automates the team creation process based on core features and channel options which are relevant to optimizing usage. This enables faster response time for team requests and offers a wealth of personalization options for organizations to implement repeatable best practices on team collaboration. 
 
-Taxonomies for products and languages: https://review.docs.microsoft.com/new-hope/information-architecture/metadata/taxonomies?branch=master
--->
+ - Easy to use team request form for the collection of team scope, stakeholders (owners and members), and business justifications for new team instances 
 
-Give a short description for your sample here. What does it do and why is it important?
+ - Embedded approval process for approval and/or rejection of requests submitted 
 
-## Contents
+ - Requestor and approver dashboards showing past and current requests with status 
 
-Outline the file contents of the repository. It helps users navigate the codebase, build configuration and any related assets.
+ - Automated team builds on approval, including creating new instances based on existing teams and channels
 
-| File/folder       | Description                                |
-|-------------------|--------------------------------------------|
-| `src`             | Sample source code.                        |
-| `.gitignore`      | Define what to ignore at commit time.      |
-| `CHANGELOG.md`    | List of changes to the sample.             |
-| `CONTRIBUTING.md` | Guidelines for contributing to the sample. |
-| `README.md`       | This README file.                          |
-| `LICENSE`         | The license for the sample.                |
+![Landing page](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Images/Landing_page.png)
 
-## Prerequisites
+**4-Step Request Process Wizard**: 
 
-Outline the required components and tools that a user might need to have on their machine in order to run the sample. This can be anything from frameworks, SDKs, OS versions or IDE releases.
+1. From a Microsoft Teams tab in a channel, end-users will use an easy 4-step wizard process to request new team instances, providing required details such as unique team name, owners, and scope (private, public), supplementary business questions give approvers the context they need for responding to requests  
 
-## Setup
+2. Once the request is submitted, an adaptive card will be posted to the designated team channel where approvers and admins will act upon the request 
 
-Explain how to prepare the sample once the user clones or downloads the repository. The section should outline every step necessary to install dependencies and set up any settings (for example, API keys and output folders).
+3. Once a request is approved by the app admins, the Azure Logic Apps service, which runs on periodic intervals, will provision the team using [Microsoft Graph APIs](https://docs.microsoft.com/en-us/graph/teams-concept-overview). The end-users and app admins will be able to track status of each request within the app. 
 
-## Running the sample
 
-Outline step-by-step instructions to execute the sample and see its output. Include steps for executing the sample from the IDE, starting specific services in the Azure portal or anything related to the overall launch of the code.
+![Request creation](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Images/Team_Info_2.png)
 
-## Key concepts
+![Adaptive card in the team of approvers](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Images/Pending_approval.png)
 
-Provide users with more context on the tools and services used in the sample. Explain some of the code that is being used and how services interact with each other.
+![Approve submitted requests](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Images/Approve_requests.png)
+
+**Extending and optimizing the value of the Request-a-team App template**: 
+
+End users can reference existing teams instances as templates during the request process. This is a great opportunity for the organization to build and promote previously tested team structures and services that best meet the desired departmental or information worker business outcomes. This means that the **Request-a-team** App template works right out-of-the-box to help in promoting and enabling everyone to reuse best practices to drive faster outcomes.
+
+## Legal notice
+
+This app template is provided under the [MIT License](https://github.com/OfficeDev/microsoft-teams-apps-scrumstatus/blob/master/LICENSE) terms.  In addition to these terms, by using this app template you agree to the following:
+
+-	You are responsible for complying with all applicable privacy and security regulations related to use, collection and handling of any personal data by your app.  This includes complying with all internal privacy and security policies of your organization if your app is developed to be sideloaded internally within your organization.
+
+-	Microsoft will have no access to data collected through your app.  Microsoft will not Where applicable, you may be responsible for data related incidents or data subject requests for data collect through your app.
+
+-	Any trademarks or registered trademarks of Microsoft in the United States and/or other countries and logos included in this repository are the property of Microsoft, and the license for this project does not grant you rights to use any Microsoft names, logos or trademarks outside of this repository.  Microsoft’s general trademark guidelines can be found [here](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general.aspx).
+
+-	Use of this template does not guarantee acceptance of your app to the Teams app store.  To make this app available in the Teams app store, you will have to comply with the [submission and validation process](https://docs.microsoft.com/en-us/microsoftteams/platform/concepts/deploy-and-publish/appsource/publish), and all associated requirements such as including your own privacy statement and terms of use for your app.
+
+
+## Getting started
+
+Begin with the [Solution overview](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Solution-overview) to read about what the app does and how it works.
+
+When you're ready to try out Requesta-a-team app, or to use it in your own organization, follow the steps in the [Deployment guide](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/DeployementGuide).
 
 ## Contributing
 
