@@ -64,7 +64,7 @@ This app template is provided under the [MIT License](https://github.com/OfficeD
 
 Begin with the [Solution overview](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Solution-overview) to read about what the app does and how it works.
 
-When you're ready to try out Requesta-a-team app, or to use it in your own organization, follow the steps in the [Deployment guide](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/DeployementGuide).
+When you're ready to try out Request-a-team app, or to use it in your own organization, follow the steps in the [Deployment guide](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Deployment-guide).
 
 ## Contributing
 
