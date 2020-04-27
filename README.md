@@ -44,8 +44,7 @@ Enterprise organizations have expressed a need to standardize and to promote bes
 **Extending and optimizing the value of the Request-a-team App template**: 
 
 End users can reference existing teams instances as templates during the request process. This is a great opportunity for the organization to build and promote previously tested team structures and services that best meet the desired departmental or information worker business outcomes (also see [here](https://support.microsoft.com/en-us/office/create-a-team-from-an-existing-team-f41a759b-3101-4af6-93bd-6aba0e5d7635?ui=en-us&rs=en-us&ad=us)). This means that the **Request-a-team** App template works right out-of-the-box to help in promoting and enabling everyone to reuse best practices to drive faster outcomes.
-
-We look forward to hearing your [feedback](https://forms.office.com/FormsPro/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRzJVkDds8yROvOeWrHDKUXBUQ0pDOFdVOFAyUUhQN1VCSkFRN1MwQ01CRi4u), and we are committed to responding with high value templates. 
+ 
 
 ## Legal notice
 
