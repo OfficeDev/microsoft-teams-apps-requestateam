@@ -1,0 +1,245 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2020/02/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.19.2003.0, Culture=neutral, PublicKeyToken=5e633289e95c321a" />
+  <pnp:Templates ID="CONTAINER-TEMPLATE-5A1D46E4D2B7477C9BE02D81D1CC772E">
+    <pnp:ProvisioningTemplate ID="TEMPLATE-5A1D46E4D2B7477C9BE02D81D1CC772E" Version="1" BaseSiteTemplate="GROUP#0" Scope="RootSite">
+      <pnp:WebSettings RequestAccessEmail="" NoCrawl="false" WelcomePage="SitePages/Home.aspx" SiteLogo="{site}/_api/GroupService/GetGroupImage?id='4f7fb5d8-c471-43b4-9408-b908694a57c4'&amp;hash=637224659270121291" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="true" MembersCanShare="true" SearchScope="DefaultScope" SearchBoxInNavBar="Inherit" />
+      <pnp:SiteSettings AllowDesigner="true" AllowCreateDeclarativeWorkflow="true" AllowSaveDeclarativeWorkflowAsTemplate="true" AllowSavePublishDeclarativeWorkflow="true" SearchBoxInNavBar="Inherit" SearchCenterUrl="" />
+      <pnp:RegionalSettings AdjustHijriDays="0" AlternateCalendarType="None" CalendarType="Gregorian" Collation="25" FirstDayOfWeek="Monday" FirstWeekOfYear="2" LocaleId="2057" ShowWeeks="false" Time24="true" TimeZone="2" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="8:00AM" />
+      <pnp:PropertyBagEntries>
+        <pnp:PropertyBagEntry Key="SRCH_SB_SET_SITE" Value="{&quot;Inherit&quot;:true,&quot;ResultsPageAddress&quot;:&quot;/search/pages/results.aspx&quot;,&quot;ShowNavigation&quot;:true}" Overwrite="false" />
+      </pnp:PropertyBagEntries>
+      <pnp:Navigation AddNewPagesToNavigation="true" CreateFriendlyUrlsForNewPages="true">
+        <pnp:GlobalNavigation NavigationType="Structural">
+          <pnp:StructuralNavigation RemoveExistingNodes="false" />
+        </pnp:GlobalNavigation>
+        <pnp:CurrentNavigation NavigationType="StructuralLocal">
+          <pnp:StructuralNavigation RemoveExistingNodes="false">
+            <pnp:NavigationNode Title="Home" Url="{site}" />
+            <pnp:NavigationNode Title="Conversations" Url="{site}/_layouts/15/groupstatus.aspx?Target=CONVERSATIONS&amp;Source=QuickLaunch" IsExternal="true" />
+            <pnp:NavigationNode Title="Documents" Url="{site}/Shared Documents/Forms/AllItems.aspx" />
+            <pnp:NavigationNode Title="Notebook" Url="{site}/_layouts/15/WopiFrame.aspx?sourcedoc={0a2f8bc1-e454-43c4-97f7-2acd3d12d456}&amp;action=editnew" IsExternal="true" />
+            <pnp:NavigationNode Title="Pages" Url="{site}/SitePages/Forms/ByAuthor.aspx" />
+            <pnp:NavigationNode Title="Recent" Url="{site}" />
+            <pnp:NavigationNode Title="Teams Requests" Url="{site}/Lists/TeamsRequests/AllItems.aspx" />
+            <pnp:NavigationNode Title="Teams Templates" Url="{site}/Lists/TeamsTemplates/AllItems.aspx" />
+            <pnp:NavigationNode Title="Site contents" Url="{site}/_layouts/15/viewlsts.aspx" IsExternal="true" />
+            <pnp:NavigationNode Title="Recent" Url="{site}" />
+            <pnp:NavigationNode Title="Site contents" Url="{site}/_layouts/15/viewlsts.aspx" IsExternal="true" />
+            <pnp:NavigationNode Title="Recent" Url="" IsExternal="true" />
+            <pnp:NavigationNode Title="Team Request Settings" Url="{site}/Lists/TeamRequestSettings/AllItems.aspx" />
+          </pnp:StructuralNavigation>
+        </pnp:CurrentNavigation>
+      </pnp:Navigation>
+      <pnp:Lists>
+        <pnp:ListInstance Title="Documents" Description="" DocumentTemplate="{site}/Shared Documents/Forms/template.dotx" OnQuickLaunch="true" TemplateType="101" Url="Shared Documents" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="500" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false" ListExperience="NewExperience" DefaultDisplayFormUrl="{site}/Shared Documents/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/Shared Documents/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/Shared Documents/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=45" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x0101" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{8B2D89E1-E3B2-4680-8516-F005E7CAE3DC}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="{site}/Shared Documents/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="FileLeafRef" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="DocIcon" />
+                <FieldRef Name="LinkFilename" />
+                <FieldRef Name="Modified" />
+                <FieldRef Name="Editor" />
+                <FieldRef Name="ID" />
+                <FieldRef Name="Sign_x002d_off_x0020_status" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <Aggregations Value="Off" />
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:Fields>
+            <Field Type="Text" DisplayName="Sign-off status" Title="Sign-off status" StaticName="_Flow_SignoffStatus" ID="{bbe00442-ecea-4ef0-857c-c1de719984f9}" SourceID="{{listid:Documents}}" Name="Sign_x002d_off_x0020_status" ColName="nvarchar13" RowOrdinal="0" />
+            <Field ID="{3a8ee3f8-166b-4394-b3e2-e98dcf86a847}" Name="A2ODMountCount" DisplaceOnUpgrade="TRUE" ReadOnly="TRUE" ShowInFileDlg="FALSE" Type="Lookup" DisplayName="A2OD Mount Count" List="Docs" FieldRef="ID" ShowField="A2ODMountCount" JoinColName="DoclibRowId" JoinRowOrdinal="0" JoinType="INNER" SchemaVersion="16.0.211.0" RecreateIfMissing="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="A2ODMountCount" FromBaseType="TRUE" />
+          </pnp:Fields>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="d307dff3-340f-44a2-9f4b-fbfe1ba07459" Name="_CommentCount" DisplayName="Comment count" />
+            <pnp:FieldRef ID="db8d9d6d-dc9a-4fbd-85f3-4a753bfdc58c" Name="_LikeCount" DisplayName="Like count" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="Team Request Settings" Description="" DocumentTemplate="" OnQuickLaunch="true" TemplateType="100" Url="Lists/TeamRequestSettings" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/Lists/TeamRequestSettings/DispForm.aspx" DefaultEditFormUrl="{site}/Lists/TeamRequestSettings/EditForm.aspx" DefaultNewFormUrl="{site}/Lists/TeamRequestSettings/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.png?rev=47" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{0FCA6DDA-D718-4864-8473-F96D0F527951}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="{site}/Lists/TeamRequestSettings/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=47">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="Description" />
+                <FieldRef Name="Value" />
+                <FieldRef Name="BlockedWordsValue" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:Fields>
+            <Field Type="Note" DisplayName="Description" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" NumLines="6" RichText="FALSE" Sortable="FALSE" ID="{3774911a-f1f4-4272-8a26-948112514138}" SourceID="{{listid:Team Request Settings}}" StaticName="Description" Name="Description" ColName="ntext2" RowOrdinal="0" />
+            <Field Type="Note" DisplayName="Value" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" NumLines="6" RichText="FALSE" Sortable="FALSE" ID="{6cdb8c97-ad75-47b8-8efc-823250e8bbbe}" SourceID="{{listid:Team Request Settings}}" StaticName="Value" Name="Value" ColName="ntext3" RowOrdinal="0" />
+            <Field Type="Note" DisplayName="BlockedWordsValue" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" NumLines="6" RichText="FALSE" Sortable="FALSE" ID="{2f316ad6-2f38-40d3-806d-b85329a9128d}" SourceID="{{listid:Team Request Settings}}" StaticName="BlockedWordsValue" Name="BlockedWordsValue" ColName="ntext4" RowOrdinal="0" />
+          </pnp:Fields>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="Teams Requests" Description="" DocumentTemplate="" OnQuickLaunch="true" TemplateType="100" Url="Lists/TeamsRequests" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/Lists/TeamsRequests/DispForm.aspx" DefaultEditFormUrl="{site}/Lists/TeamsRequests/EditForm.aspx" DefaultNewFormUrl="{site}/Lists/TeamsRequests/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.png?rev=47" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="2" WriteSecurity="2" ValidationFormula="" ValidationMessage="">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{7CD0EB7A-2272-421D-B739-2CB60C119336}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="{site}/Lists/TeamsRequests/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=47">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="TeamDescription" />
+                <FieldRef Name="BusinessJustification" />
+                <FieldRef Name="Owners" />
+                <FieldRef Name="Members" />
+                <FieldRef Name="Visibility" />
+                <FieldRef Name="TeamPurpose" />
+                <FieldRef Name="Status" />
+                <FieldRef Name="TeamAlias" />
+                <FieldRef Name="ConfidentialData" />
+                <FieldRef Name="TemplateId" />
+                <FieldRef Name="Comments" />
+                <FieldRef Name="Stage" />
+                <FieldRef Name="Classification" />
+                <FieldRef Name="TeamURL" />
+                <FieldRef Name="TemplateTitle" />
+                <FieldRef Name="StatusReason" />
+                <FieldRef Name="ApprovedDate" />
+                <FieldRef Name="SharePointSiteURL" />
+                <FieldRef Name="FirstPartyTemplate" />
+                <FieldRef Name="Created" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <Aggregations Value="Off" />
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:Fields>
+            <Field Type="Note" DisplayName="Team Description" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" NumLines="6" RichText="FALSE" Sortable="FALSE" ID="{606c46c9-4413-499f-8db7-b128d1751132}" SourceID="{{listid:Teams Requests}}" StaticName="TeamDescription" Name="TeamDescription" ColName="ntext2" RowOrdinal="0" CustomFormatter="" RestrictedMode="TRUE" RichTextMode="Compatible" IsolateStyles="FALSE" AppendOnly="FALSE" Version="1" />
+            <Field Type="Note" DisplayName="Business Justification" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" NumLines="6" RichText="FALSE" Sortable="FALSE" ID="{fb878f25-ec89-4b01-b6c9-eb9d78515195}" SourceID="{{listid:Teams Requests}}" StaticName="BusinessJustification" Name="BusinessJustification" ColName="ntext3" RowOrdinal="0" CustomFormatter="" RestrictedMode="TRUE" RichTextMode="Compatible" IsolateStyles="FALSE" AppendOnly="FALSE" Version="1" />
+            <Field Type="UserMulti" DisplayName="Owners" List="UserInfo" Required="FALSE" EnforceUniqueValues="FALSE" ShowField="ImnName" UserSelectionMode="PeopleOnly" UserSelectionScope="0" ID="{63f7afc1-92f8-4fdb-95f6-7162f0e67913}" SourceID="{{listid:Teams Requests}}" StaticName="Owners" Name="Owners" ColName="int1" RowOrdinal="0" Group="" Mult="TRUE" Sortable="FALSE" Version="1" />
+            <Field Type="UserMulti" DisplayName="Members" List="UserInfo" Required="FALSE" EnforceUniqueValues="FALSE" ShowField="ImnName" UserSelectionMode="PeopleOnly" UserSelectionScope="0" ID="{f8953ad8-fd84-4a8b-bba0-f9bf056dc147}" SourceID="{{listid:Teams Requests}}" StaticName="Members" Name="Members" ColName="int2" RowOrdinal="0" Group="" Mult="TRUE" Sortable="FALSE" Version="1" />
+            <Field Type="Choice" DisplayName="Visibility" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="Dropdown" FillInChoice="FALSE" ID="{1c4a85a0-4ef1-466e-95e0-de21ee110990}" SourceID="{{listid:Teams Requests}}" StaticName="Visibility" Name="Visibility" ColName="nvarchar4" RowOrdinal="0">
+              <Default>Private</Default>
+              <CHOICES>
+                <CHOICE>Private</CHOICE>
+                <CHOICE>Public</CHOICE>
+              </CHOICES>
+            </Field>
+            <Field Type="Note" DisplayName="Team Purpose and Content" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" NumLines="6" RichText="FALSE" Sortable="FALSE" ID="{e4c7a4e8-8187-4ffb-b892-b320a23d603d}" SourceID="{{listid:Teams Requests}}" StaticName="TeamPurpose" Name="TeamPurpose" ColName="ntext4" RowOrdinal="0" CustomFormatter="" RestrictedMode="TRUE" RichTextMode="Compatible" IsolateStyles="FALSE" AppendOnly="FALSE" Version="1" />
+            <Field Type="Choice" DisplayName="Status" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="Dropdown" FillInChoice="FALSE" ID="{73ca1a39-406a-48c2-ae8c-850451793480}" SourceID="{{listid:Teams Requests}}" StaticName="Status" Name="Status" ColName="nvarchar5" RowOrdinal="0" CustomFormatter="" Version="1">
+              <Default>Not Submitted</Default>
+              <CHOICES>
+                <CHOICE>Not Submitted</CHOICE>
+                <CHOICE>Submitted</CHOICE>
+                <CHOICE>Pending Approval</CHOICE>
+                <CHOICE>Approved</CHOICE>
+                <CHOICE>Rejected</CHOICE>
+                <CHOICE>Team Creation</CHOICE>
+                <CHOICE>Team Created</CHOICE>
+                <CHOICE>Team Creation Failed</CHOICE>
+              </CHOICES>
+            </Field>
+            <Field Type="Text" DisplayName="Team Alias" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{48862393-00f0-4fcf-bfb4-f14854bade69}" SourceID="{{listid:Teams Requests}}" StaticName="TeamAlias" Name="TeamAlias" ColName="nvarchar7" RowOrdinal="0" CustomFormatter="" Version="1" />
+            <Field Type="Boolean" DisplayName="Confidential Data" EnforceUniqueValues="FALSE" Indexed="FALSE" ID="{877a66d6-69dc-43ff-ab7a-40af815fe91a}" SourceID="{{listid:Teams Requests}}" StaticName="ConfidentialData" Name="ConfidentialData" ColName="bit2" RowOrdinal="0" CustomFormatter="" Required="FALSE" Version="1">
+              <Default>0</Default>
+            </Field>
+            <Field Type="Text" DisplayName="Template Id" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{20ad71bf-b579-40b8-a4ec-9f92ea22e443}" SourceID="{{listid:Teams Requests}}" StaticName="TemplateId" Name="TemplateId" ColName="nvarchar8" RowOrdinal="0" CustomFormatter="" Version="1" />
+            <Field Type="Note" DisplayName="Comments" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" NumLines="6" RichText="FALSE" Sortable="FALSE" ID="{260f7057-a614-43e5-875e-ce459d7220a7}" SourceID="{{listid:Teams Requests}}" StaticName="Comments" Name="Comments" ColName="ntext6" RowOrdinal="0" />
+            <Field Type="Choice" DisplayName="Stage" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="Dropdown" FillInChoice="FALSE" ID="{0f7271ca-c566-47f9-9c10-c1163f70255d}" SourceID="{{listid:Teams Requests}}" StaticName="Stage" Name="Stage" ColName="nvarchar9" RowOrdinal="0" CustomFormatter="" Version="1">
+              <Default>Team Information</Default>
+              <CHOICES>
+                <CHOICE>Team Information</CHOICE>
+                <CHOICE>Requirements</CHOICE>
+                <CHOICE>Data Classification</CHOICE>
+                <CHOICE>Template</CHOICE>
+                <CHOICE>Submitted</CHOICE>
+              </CHOICES>
+            </Field>
+            <Field Type="Text" DisplayName="Classification" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{f1aaf054-df8d-4b75-aa40-c40af312c77b}" SourceID="{{listid:Teams Requests}}" StaticName="Classification" Name="Classification" ColName="nvarchar10" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="Team URL" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{a103925f-2646-49d0-ac53-e9ac312d26e1}" SourceID="{{listid:Teams Requests}}" StaticName="TeamURL" Name="TeamURL" ColName="nvarchar6" RowOrdinal="0" CustomFormatter="" Version="1" />
+            <Field Type="Text" DisplayName="Template Title" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{09aedcb8-8bc2-4d72-b399-561da6308fd4}" SourceID="{{listid:Teams Requests}}" StaticName="TemplateTitle" Name="TemplateTitle" ColName="nvarchar11" RowOrdinal="0" CustomFormatter="" Version="1" />
+            <Field Type="Text" DisplayName="Status Reason" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{5093f25d-7bd3-4d1b-8a1a-6c0774a00e02}" SourceID="{{listid:Teams Requests}}" StaticName="StatusReason" Name="StatusReason" ColName="nvarchar12" RowOrdinal="0" CustomFormatter="" Version="1" />
+            <Field Type="DateTime" DisplayName="Approved Date" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="DateTime" FriendlyDisplayFormat="Disabled" ID="{6c672905-2e02-469a-9cd5-30f54628478f}" SourceID="{{listid:Teams Requests}}" StaticName="ApprovedDate" Name="ApprovedDate" ColName="datetime1" RowOrdinal="0" CustomFormatter="" CalType="0" Version="1" />
+            <Field Type="Text" DisplayName="SharePoint Site URL" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{a32fd64a-9e3f-4ad6-8f8e-b55456d5f7bf}" SourceID="{{listid:Teams Requests}}" StaticName="SharePointSiteURL" Name="SharePointSiteURL" ColName="nvarchar13" RowOrdinal="0" CustomFormatter="" Version="1" />
+            <Field Type="Boolean" DisplayName="First Party Template" EnforceUniqueValues="FALSE" Indexed="FALSE" ID="{9a64a440-3b6b-480c-ba7a-ad0e087054bd}" SourceID="{{listid:Teams Requests}}" StaticName="FirstPartyTemplate" Name="FirstPartyTemplate" ColName="bit1" RowOrdinal="0" CustomFormatter="" Required="FALSE" Version="1">
+              <Default>0</Default>
+            </Field>
+            <Field Type="Text" DisplayName="RowKey" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{ff9d86db-eef3-433c-9fd3-2901e96efdab}" SourceID="{{listid:Teams Requests}}" StaticName="RowKey" Name="RowKey" ColName="nvarchar14" RowOrdinal="0" />
+          </pnp:Fields>
+          <pnp:Webhooks>
+            <pnp:Webhook ServerNotificationUrl="https://uk-001.azure-apim.net/apim/sharepointonline/ontableupdatedhook?r=https%253a%252f%252fprod-10.uksouth.logic.azure.com%252fworkflows%252fce2d0f6be4af4ccb8ea61c782d7d3a76%252ftriggers%252fWhen_a_team_request_item_is_submitted%252fpaths%252finvoke%253fapi-version%253d2016-06-01%2526sp%253d%25252Ftriggers%25252FWhen_a_team_request_item_is_submitted%25252Frun%25252C%25252Ftriggers%25252FWhen_a_team_request_item_is_submitted%25252Fread%2526sv%253d1.0%2526sig%253dhwnr9znMqmdject5LBNqiYffgyuuBcEx67cPIny4YVA" ExpiresInDays="2" />
+          </pnp:Webhooks>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="Teams Templates" Description="" DocumentTemplate="" OnQuickLaunch="true" TemplateType="100" Url="Lists/TeamsTemplates" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/Lists/TeamsTemplates/DispForm.aspx" DefaultEditFormUrl="{site}/Lists/TeamsTemplates/EditForm.aspx" DefaultNewFormUrl="{site}/Lists/TeamsTemplates/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.png?rev=47" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{3ACEC09C-687F-4F86-91C4-734E060B529F}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="{site}/Lists/TeamsTemplates/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=47">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="BaseTemplateType" />
+                <FieldRef Name="BaseTemplateId" />
+                <FieldRef Name="TeamId" />
+                <FieldRef Name="Description" />
+                <FieldRef Name="FirstPartyTemplate" />
+                <FieldRef Name="TeamVisibility" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <Aggregations Value="Off" />
+              <JSLink>clienttemplates.js</JSLink>
+              <CustomFormatter />
+            </View>
+          </pnp:Views>
+          <pnp:Fields>
+            <Field DisplayName="Base Template Type" Format="Dropdown" MaxLength="255" Name="BaseTemplateType" Title="Base Template Type" Type="Text" ID="{38598a97-b23d-4d66-95b9-b8e6d0c70fc8}" SourceID="{{listid:Teams Templates}}" StaticName="BaseTemplateType" ColName="nvarchar4" RowOrdinal="0" />
+            <Field DisplayName="Base Template Id" Format="Dropdown" MaxLength="255" Name="BaseTemplateId" Title="Base Template Id" Type="Text" ID="{c5243c06-7536-46da-8dac-77a1e8194a82}" SourceID="{{listid:Teams Templates}}" StaticName="BaseTemplateId" ColName="nvarchar5" RowOrdinal="0" />
+            <Field DisplayName="Team Id" Format="Dropdown" MaxLength="255" Name="TeamId" Title="Team Id" Type="Text" ID="{2b628b4a-c311-4a22-8d76-a3a4eb7f2dc9}" SourceID="{{listid:Teams Templates}}" StaticName="TeamId" ColName="nvarchar6" RowOrdinal="0" />
+            <Field Type="Note" DisplayName="Description" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" NumLines="6" RichText="FALSE" Sortable="FALSE" ID="{8f13335c-72f6-46a8-8174-de063b73070e}" SourceID="{{listid:Teams Templates}}" StaticName="Description" Name="Description" ColName="ntext2" RowOrdinal="0" />
+            <Field Type="Boolean" DisplayName="First Party Template" EnforceUniqueValues="FALSE" Indexed="FALSE" ID="{a596b0af-7853-422a-a772-42ebfcc23a8b}" SourceID="{{listid:Teams Templates}}" StaticName="FirstPartyTemplate" Name="FirstPartyTemplate" ColName="bit1" RowOrdinal="0" CustomFormatter="" Required="FALSE" Version="1">
+              <Default>0</Default>
+            </Field>
+            <Field DisplayName="Team Visibility" Format="Dropdown" MaxLength="255" Name="TeamVisibility" Title="Team Visibility" Type="Text" ID="{8b3611fa-1611-49c9-9388-ae4cd0b055aa}" SourceID="{{listid:Teams Templates}}" StaticName="TeamVisibility" ColName="nvarchar7" RowOrdinal="0" />
+          </pnp:Fields>
+          <pnp:Webhooks>
+            <pnp:Webhook ServerNotificationUrl="https://0-ukwest1.pushp.svc.ms/notifications?token=w3-f09f7c32-175f-4dde-8539-2477569df9c9" ExpiresInDays="1" />
+          </pnp:Webhooks>
+        </pnp:ListInstance>
+      </pnp:Lists>
+      <pnp:Features>
+        <pnp:WebFeatures>
+          <pnp:Feature ID="780ac353-eaf8-4ac2-8c47-536d93c03fd6" />
+          <pnp:Feature ID="f151bb39-7c3b-414f-bb36-6bf18872052f" />
+        </pnp:WebFeatures>
+      </pnp:Features>
+      <pnp:Header Layout="Standard" />
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

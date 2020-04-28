@@ -1,11 +1,12 @@
 ---
 page_type: sample
-languages:
-- csharp
 products:
-- dotnet
-description: "Add 150 character max description"
-urlFragment: "update-this-to-unique-url-stub"
+- Power Apps
+- Power Automate
+- Microsoft Azure Logic Apps
+- SharePoint
+description: Power Apps solution that automates the team creation process based on core features and channel options
+urlFragment: microsoft-teams-apps-requestateam
 ---
 
 # Request-a-team App Template
@@ -25,7 +26,7 @@ Enterprise organizations have expressed a need to standardize and to promote bes
 
 ![Landing page](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Images/Landing_page.png)
 
-**4-Step Request Process Wizard**: 
+### 4-Step request process wizard: 
 
 1. From a Microsoft Teams tab in a channel, end-users will use an easy 4-step wizard process to request new team instances, providing required details such as unique team name, owners, and scope (private, public), supplementary business questions give approvers the context they need for responding to requests  
 
@@ -42,15 +43,16 @@ Enterprise organizations have expressed a need to standardize and to promote bes
 
 **Extending and optimizing the value of the Request-a-team App template**: 
 
-End users can reference existing teams instances as templates during the request process. This is a great opportunity for the organization to build and promote previously tested team structures and services that best meet the desired departmental or information worker business outcomes. This means that the **Request-a-team** App template works right out-of-the-box to help in promoting and enabling everyone to reuse best practices to drive faster outcomes.
+End users can reference existing teams instances as templates during the request process. This is a great opportunity for the organization to build and promote previously tested team structures and services that best meet the desired departmental or information worker business outcomes (also see [here](https://support.microsoft.com/en-us/office/create-a-team-from-an-existing-team-f41a759b-3101-4af6-93bd-6aba0e5d7635?ui=en-us&rs=en-us&ad=us)). This means that the **Request-a-team** App template works right out-of-the-box to help in promoting and enabling everyone to reuse best practices to drive faster outcomes.
+ 
 
 ## Legal notice
 
-This app template is provided under the [MIT License](https://github.com/OfficeDev/microsoft-teams-apps-scrumstatus/blob/master/LICENSE) terms.  In addition to these terms, by using this app template you agree to the following:
+This app template is provided under the [MIT License](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/blob/master/LICENSE) terms.  In addition to these terms, by using this app template you agree to the following:
 
 -	You are responsible for complying with all applicable privacy and security regulations related to use, collection and handling of any personal data by your app.  This includes complying with all internal privacy and security policies of your organization if your app is developed to be sideloaded internally within your organization.
 
--	Microsoft will have no access to data collected through your app.  Microsoft will not Where applicable, you may be responsible for data related incidents or data subject requests for data collect through your app.
+-	Where applicable, you may be responsible for data related incidents or data subject requests for data collect through your app.
 
 -	Any trademarks or registered trademarks of Microsoft in the United States and/or other countries and logos included in this repository are the property of Microsoft, and the license for this project does not grant you rights to use any Microsoft names, logos or trademarks outside of this repository.  Microsoft’s general trademark guidelines can be found [here](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general.aspx).
 
@@ -61,7 +63,7 @@ This app template is provided under the [MIT License](https://github.com/OfficeD
 
 Begin with the [Solution overview](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Solution-overview) to read about what the app does and how it works.
 
-When you're ready to try out Requesta-a-team app, or to use it in your own organization, follow the steps in the [Deployment guide](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/DeployementGuide).
+When you're ready to try out Request-a-team app, or to use it in your own organization, follow the steps in the [Deployment guide](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Deployment-guide).
 
 ## Contributing
 
