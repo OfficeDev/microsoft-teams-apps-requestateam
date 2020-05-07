@@ -695,6 +695,20 @@ function CreateRoleAssignments() {
 
 }
 
+#Check that the provided location is a valid Azure location
+function ValidateAzureLocation {
+    $locations = Get-AzLocation
+    
+    $Location = $Location.Replace(" ","")
+
+    # Validate that the location exists
+    if($null -eq ($locations | Where-Object Location -eq $Location)) {
+        throw "Invalid Azure Location. Please provide a valid location. See this list - https://azure.microsoft.com/en-gb/global-infrastructure/locations/"
+
+    }
+}
+
+
 Write-Ascii -InputObject "Request-a-Team" -ForegroundColor Magenta
 
 Write-Host "### DEPLOYMENT SCRIPT STARTED ###" -ForegroundColor Magenta
@@ -715,6 +729,7 @@ $global:encodedAppSecret = [System.Web.HttpUtility]::UrlEncode($global:appSecret
 # Initialise connections - Azure Az/CLI
 Write-Host "Launching Azure sign-in..." -ForegroundColor Yellow
 $azConnect = Connect-AzAccount -Subscription $SubscriptionId -Tenant $TenantId
+ValidateAzureLocation
 Write-Host "Launching Azure AD sign-in..." -ForegroundColor Yellow
 Connect-AzureAD
 Write-Host "Launching Azure CLI sign-in..." -ForegroundColor Yellow
