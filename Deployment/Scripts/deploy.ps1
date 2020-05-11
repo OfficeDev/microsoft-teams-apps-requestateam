@@ -46,12 +46,15 @@
 .PARAMETER ServiceAccountUPN
     UPN of Service Account to be used for the solution - used in the Logic App connections to connect to SharePoint, Outlook and Microsoft Teams.
 
-.PARAMETER ApproverUPN
-    UPN of user account to approve requests.
+.PARAMETER UseMSGraphBeta
+    Deploys a version of the provisioning logic app which uses solely the beta endpoint for the Microsoft Graph (provides the ability to create private channels when cloning teams and creating teams from your own defined templates). Otherwise the 1.0 endpoint will be used.
+
+.PARAMETER IsEdu
+    Specifies whether the current tenant is an Education tenant. If set to true, the Education Teams Templates will be deployed. These will be skipped if set to false or left blank.
 
 .EXAMPLE
     deploy.ps1 -TenantName "contoso" -RequestsSiteName "Teams Request" -RequestsSiteDesc "Site to Microsoft Teams requests" 
-    -ManagedPath "sites" -SubscriptionId "acb9bcbb-1f4b-44b9-960c-7ddaf4ad21d2" -Location "uksouth" -ResourceGroupName "teamsautomate-rg" -AppName "TeamsAutomate" -ServiceAccountUPN provisioning@contoso.com -ApproverUPN servicedesk@contoso.com
+    -ManagedPath "sites" -SubscriptionId "acb9bcbb-1f4b-44b9-960c-7ddaf4ad21d2" -Location "uksouth" -ResourceGroupName "teamsautomate-rg" -AppName "TeamsAutomate" -ServiceAccountUPN provisioning@contoso.com -UseMSGraphBeta $false -IsEdu $false
 
 -----------------------------------------------------------------------------------------------------------------------------------
 Script name : deploy.ps1
@@ -166,15 +169,15 @@ Param(
     [String]
     $ServiceAccountUPN,
 
-    [Parameter(Mandatory = $true,
-        ValueFromPipeline = $true)]
-    [String]
-    $ApproverUPN,
-
     [Parameter(Mandatory = $false,
         ValueFromPipeline = $true)]
     [Bool]
-    $UseMSGraphBeta = $false
+    $UseMSGraphBeta = $false,
+
+    [Parameter(Mandatory = $false,
+    ValueFromPipeline = $true)]
+    [Bool]
+    $IsEdu = $false
 )
 
 Add-Type -AssemblyName System.Web
@@ -236,112 +239,6 @@ $global:appId = $null
 $global:appSecret = $null
 $global:appServicePrincipalId = $null
 $global:siteClassifications = $null
-
-# Create flow packages (zip files) from extracted files.
-# Update definition JSON and replace placeholders with parameter values
-# WORK IN PROGRESS
-function CreateFlowPowerAppsPackages {
-
-    param(
-        [hashtable] $placeholderValues
-    )
-    param(
-        [string] $packageType
-    )
-    param(
-        [string] $folderPath
-    )
-
-    Write-Host "### FLOW PACKAGE CREATION ###`nConfiguring flows and creating packages..." -ForegroundColor Yellow
-
-    # Delete previous zip files if they exist
-    Remove-Item -Path "..\Flows\*.zip" -ErrorAction Ignore
-
-    # Copy files into new temp folder
-    $tempFolderPath = ((Get-item $folderpath).Parent.FullName + "\" + (Get-item $folderPath).BaseName + "_Temp")
-    Copy-Item -Path "$folderPath" -Destination $tempFolderPath -Recurse
-
-    # Set path to definition JSON file
-
-    $JSONPath = ""
-
-    switch ($packageType.ToLower()) {
-        "flow" { 
-            $JSONPath = Get-ChildItem -Path $tempFolderPath -Recurse -Include definition.json | Select -ExpandProperty FullName
-        }
-        "powerapps" {
-            $JSONPath = Get-ChildItem -Path $tempFolderPath -Recurse | Where-Object { $_.Extension -eq ".json" } | Select -ExpandProperty FullName
-        }
-    }
-
-    # Get JSON content
-    $configJSON = (Get-Content $JSONPath)
-
-    # Loop through placeholders and replace
-    $placeholderValues.GetEnumerator() | ForEach-Object {
-        
-        $configJSON = $configJSON.Replace($_.Key, $_.Value)
-      
-    }
-
-    # Update file contents
-    Set-Content $JSONPath -Value $configJSON
-
-    # Archive file path
-    $archivePath = $tempFolderPath.Replace("_Temp", ".zip")
-
-    # Re-zip the flow package ready for import - rename the zip file or update script to replace with the name of your flow
-    Compress-Archive -Path "$tempFolderPath\*" -DestinationPath $archivePath
-
-    # Delete temp deployment flow folder
-    Remove-Item -Path "..\Flows\SiteRequestApprovalFlow_Temp" -Recurse
-
-    Write-Host "### FLOW PACKAGES CREATED - PLEASE IMPORT THESE MANUALLY ###"
-
-}
-
-# WORK IN PROGRESS
-function DeployFlows() {
-
-    param(
-        [hashtable] $configValues
-    )
-
-    Copy-Item -Path "..\Flows\SiteRequestApprovalFlow" -Destination "..\Flows\SiteRequestApprovalFlow_Temp" -Recurse
-
-    # Set path to definition JSON file
-    $flowJSONPath = Get-ChildItem -Path "..\Flows\SiteRequestApprovalFlow_Temp*" -Recurse -Include definition.json | Select -ExpandProperty Directory
-
-    # Append filename
-    $flowJSONPath = "$flowJSONPath\definition.json"
-
-    Write-Host $flowJSONPath
-
-    #Write-Host $flowJSONPath
-
-    # Get path of top level directory (where flow package is ectracted to)
-    $topFolderPath = (get-item $flowJSONPath).Directory.Parent.Parent.Parent.Parent.FullName
-
-    # Get JSON content and update placeholders based on parameters
-    $flowJSON = (Get-Content $flowJSONPath)
-
-    Write-Host $flowJSON
-
-    $values.GetEnumerator() | ForEach-Object {
-        
-        $flowJSON = $flowJSON.Replace($_.Key, $_.Value)
-     
-    }
-    
-    Set-Content $flowJSONPath -Value $flowJSON
-
-    # Re-zip the flow package ready for import - rename the zip file or update script to replace with the name of your flow
-    Compress-Archive -Path "..\Flows\SiteRequestApprovalFlow_Temp" -DestinationPath "$topFolderPath\SiteRequestApprovalFlow.zip"
-
-    # Delete temp deployment flow
-    Remove-Item -Path "..\Flows\SiteRequestApprovalFlow_Temp" -Recurse
-
-}
 
 # Create site and apply provisioning template
 function CreateRequestsSharePointSite {
@@ -458,6 +355,10 @@ function ConfigureSharePointSite {
 
         $teamsTemplates = Import-Excel "$packageRootPath$settingsPath" -WorksheetName $teamsTemplatesWorksheetName
         foreach ($template in $teamsTemplates) {
+            If(!$isEdu -and ($template.BaseTemplateId -eq "educationStaff" -or $template.BaseTemplateId -eq "educationProfessionalLearningCommunity")) {
+                # Tenant is not an EDU tenant  - do nothing
+            }
+            else{
             $listItemCreationInformation = New-Object Microsoft.SharePoint.Client.ListItemCreationInformation
             $newItem = $teamsTemplatesList.AddItem($listItemCreationInformation)
             $newItem["Title"] = $template.Title
@@ -469,6 +370,7 @@ function ConfigureSharePointSite {
             $newItem["TeamVisibility"] = $template.TeamVisibility
             $newitem.Update()
             $context.ExecuteQuery()
+            }
         }
         Write-Host "Added templates to Teams Templates list" -ForegroundColor Green
 
@@ -508,7 +410,7 @@ function CreateAzureADApp {
         Write-Host "### AZURE AD APP CREATION ###`nCreating Azure AD App - '$appName'..." -ForegroundColor Yellow
         
         # Create azure ad app registration using CLI
-        az ad app create --display-name $appName --required-resource-accesses './manifest.json' --password $global:appSecret
+        az ad app create --display-name $appName --required-resource-accesses './manifest.json' --password $global:appSecret --end-date '2299-12-31T11:59:59+00:00'
 
         Write-Host "Waiting for app to finish creating..."
 
@@ -762,8 +664,5 @@ DeployARMTemplate
 Write-Host "Azure resources deployed`n### AZURE RESOURCES DEPLOYMENT COMPLETE ###" -ForegroundColor Green
 
 AuthoriseLogicAppConnections
-
-#$flowPlaceholders = @{"{SiteURL}" = $requestsSiteUrl; "{RequestsListID}" = $global:requestsListId; "{SettingsListID}" = $global:requestsSetingsListId; "{AoproverUPN}" = $ApproverUPN }
-#CreateFlowPackages -placeholderValues $flowPlaceholders
 
 Write-Host "DEPLOYMENT COMPLETED SUCCESSFULLY" -ForegroundColor Green
