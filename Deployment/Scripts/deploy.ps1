@@ -189,12 +189,12 @@ If (-not (Test-Path -Path "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2")) {
 }
 
 # Install required modules
-Install-Module microsoft.online.sharepoint.powershell -Scope CurrentUser
-Install-Module SharePointPnPPowerShellOnline -Scope CurrentUser -MinimumVersion 3.19.2003.0 -Force
-Install-Module ImportExcel -Scope CurrentUser
-Install-Module Az -AllowClobber -Scope CurrentUser
-Install-Module AzureADPreview -Scope CurrentUser
-Install-Module WriteAscii -Scope CurrentUser
+#Install-Module microsoft.online.sharepoint.powershell -Scope CurrentUser
+#Install-Module SharePointPnPPowerShellOnline -Scope CurrentUser -MinimumVersion 3.19.2003.0 -Force
+#Install-Module ImportExcel -Scope CurrentUser
+#Install-Module Az -AllowClobber -Scope CurrentUser
+#Install-Module AzureADPreview -Scope CurrentUser
+#Install-Module WriteAscii -Scope CurrentUser
 
 # Variables
 $packageRootPath = "..\"
@@ -239,6 +239,7 @@ $global:appId = $null
 $global:appSecret = $null
 $global:appServicePrincipalId = $null
 $global:siteClassifications = $null
+$global:location = $null
 
 # Create site and apply provisioning template
 function CreateRequestsSharePointSite {
@@ -450,7 +451,7 @@ function DeployAutomationAssets {
     try {
         Write-Host "Creating and deploying automation assets..." -ForegroundColor Yellow
         
-        New-AzAutomationAccount -Name $automationAccountName -Location $Location -ResourceGroupName $ResourceGroupName
+        New-AzAutomationAccount -Name $automationAccountName -Location $global:location -ResourceGroupName $ResourceGroupName
 
         # TODO - Make content links into variables
         # Import automation modules - wait for each module to import before continuing 
@@ -493,16 +494,16 @@ function DeployARMTemplate {
     try { 
         # Deploy ARM templates
         Write-Host "Deploying api connections..." -ForegroundColor Yellow
-        az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'connections.json' --parameters "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "location=$location"
+        az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'connections.json' --parameters "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "location=$global:location"
 
         Write-Host "Deploying logic app..." -ForegroundColor Yellow
 
         if ($UseMSGraphBeta) {
             Write-Host "Microsoft Graph beta endpoint will be used"
-            az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'processteamrequestbeta.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "automationAccountName=$automationAccountName" "requestsSiteUrl=$requestsSiteUrl" "requestsListId=$global:requestsListId" "location=$location" "serviceAccountUPN=$ServiceAccountUPN"
+            az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'processteamrequestbeta.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "automationAccountName=$automationAccountName" "requestsSiteUrl=$requestsSiteUrl" "requestsListId=$global:requestsListId" "location=$global:location" "serviceAccountUPN=$ServiceAccountUPN"
         }
         else {
-            az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'processteamrequestv1.0.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "automationAccountName=$automationAccountName" "requestsSiteUrl=$requestsSiteUrl" "requestsListId=$global:requestsListId" "templatesListId=$global:teamsTemplatesListId" "location=$location" "serviceAccountUPN=$ServiceAccountUPN"
+            az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'processteamrequestv1.0.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "automationAccountName=$automationAccountName" "requestsSiteUrl=$requestsSiteUrl" "requestsListId=$global:requestsListId" "templatesListId=$global:teamsTemplatesListId" "location=$global:location" "serviceAccountUPN=$ServiceAccountUPN"
         }
 
         Write-Host "Finished deploying logic app" -ForegroundColor Green
@@ -601,10 +602,10 @@ function CreateRoleAssignments() {
 function ValidateAzureLocation {
     $locations = Get-AzLocation
     
-    $Location = $Location.Replace(" ","")
+    $global:location = $Location.Replace(" ","").ToLower()
 
     # Validate that the location exists
-    if($null -eq ($locations | Where-Object Location -eq $Location)) {
+    if($null -eq ($locations | Where-Object Location -eq $global:location)) {
         throw "Invalid Azure Location. Please provide a valid location. See this list - https://azure.microsoft.com/en-gb/global-infrastructure/locations/"
 
     }
@@ -655,7 +656,7 @@ Write-Host "### AZURE RESOURCES DEPLOYMENT ###`nStarting Azure resources deploym
 # Handle spaces in resource group name
 $ResourceGroupName = $ResourceGroupName.Replace(" ", "")
 Write-Host "Creating resource group $resourceGroupName..." -ForegroundColor Yellow
-New-AzResourceGroup -Name $resourceGroupName -Location $location
+New-AzResourceGroup -Name $resourceGroupName -Location $global:location
 Write-Host "Created resource group" -ForegroundColor Green
 
 DeployAutomationAssets
