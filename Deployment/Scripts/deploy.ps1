@@ -189,12 +189,12 @@ If (-not (Test-Path -Path "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2")) {
 }
 
 # Install required modules
-#Install-Module microsoft.online.sharepoint.powershell -Scope CurrentUser
-#Install-Module SharePointPnPPowerShellOnline -Scope CurrentUser -MinimumVersion 3.19.2003.0 -Force
-#Install-Module ImportExcel -Scope CurrentUser
-#Install-Module Az -AllowClobber -Scope CurrentUser
-#Install-Module AzureADPreview -Scope CurrentUser
-#Install-Module WriteAscii -Scope CurrentUser
+Install-Module microsoft.online.sharepoint.powershell -Scope CurrentUser
+Install-Module SharePointPnPPowerShellOnline -Scope CurrentUser -MinimumVersion 3.19.2003.0 -Force
+Install-Module ImportExcel -Scope CurrentUser
+Install-Module Az -AllowClobber -Scope CurrentUser
+Install-Module AzureADPreview -Scope CurrentUser
+Install-Module WriteAscii -Scope CurrentUser
 
 # Variables
 $packageRootPath = "..\"
