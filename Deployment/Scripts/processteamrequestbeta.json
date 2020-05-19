@@ -160,7 +160,7 @@
                                                         "not": {
                                                             "contains": [
                                                                 "@string(body('Get_team_owners'))",
-                                                                "@items('loop_through_members_array')?['MemberUPN']"
+                                                                "@items('Loop_through_Members_array')?['ID']"
                                                             ]
                                                         }
                                                     }
@@ -232,7 +232,7 @@
                                                         "not": {
                                                             "contains": [
                                                                 "@string(body('Get_team_owners'))",
-                                                                "@items('Loop_through_Owners_-_add_to_team')?['OwnerUPN']"
+                                                                "@items('Loop_through_Owners_-_add_to_team')?['ID']"
                                                             ]
                                                         }
                                                     }
@@ -622,6 +622,21 @@
                             },
                             "type": "Scope"
                         },
+                         "Append_service_account_to_Owners_variable": {
+                            "runAfter": {
+                                "Get_service_account_user_profile": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "AppendToArrayVariable",
+                            "inputs": {
+                                "name": "Owners",
+                                "value": {
+                                    "ID": "@{body('Get_service_account_user_profile')?['id']}",
+                                    "OwnerUPN": "@{variables('ServiceAccountUPN')}"
+                                }
+                            }
+                        },
                         "Check_if_SharePoint_site_exists": {
                             "actions": {
                                 "Check_SiteExists_value": {
@@ -965,7 +980,7 @@
                                 }
                             },
                             "runAfter": {
-                                "Get_service_account_user_profile": [
+                                "Append_service_account_to_Owners_variable": [
                                     "Succeeded"
                                 ]
                             },
@@ -1127,7 +1142,7 @@
                                 }
                             },
                             "runAfter": {
-                                "Post_welcome_message": [
+                                "Remove_service_account_from_group": [
                                     "Succeeded"
                                 ]
                             },
@@ -1898,44 +1913,9 @@
                                 }
                             }
                         },
-                        "Post_welcome_message": {
-                            "actions": {
-                                "Add_service_account_to_group": {
-                                    "runAfter": {
-                                    },
-                                    "type": "Http",
-                                    "inputs": {
-                                        "authentication": {
-                                            "audience": "https://graph.microsoft.com",
-                                            "clientId": "@variables('ClientID')",
-                                            "secret": "@variables('ClientSecret')",
-                                            "tenant": "@variables('TenantID')",
-                                            "type": "ActiveDirectoryOAuth"
-                                        },
-                                        "body": {
-                                            "@@odata.id": "https://graph.microsoft.com/v1.0/users/@{body('Get_service_account_user_profile')?['id']}"
-                                        },
-                                        "method": "POST",
-                                        "uri": "@{variables('GraphURL')}/groups/@{body('Parse_created_team_JSON')?['id']}/owners/$ref"
-                                    }
-                                },
-                                "Delay": {
-                                    "runAfter": {
-                                        "Add_service_account_to_group": [
-                                            "Succeeded"
-                                        ]
-                                    },
-                                    "type": "Wait",
-                                    "inputs": {
-                                        "interval": {
-                                            "count": 3,
-                                            "unit": "Minute"
-                                        }
-                                    }
-                                },
                                 "Post_welcome_message_to_general_channel": {
                                     "runAfter": {
-                                        "Delay": [
+                                        "Add_Members_and_Owners": [
                                             "Succeeded"
                                         ]
                                     },
@@ -1974,15 +1954,6 @@
                                         "method": "DELETE",
                                         "uri": "@{variables('GraphURL')}/groups/@{body('Parse_created_team_JSON')?['id']}/owners/@{body('Get_service_account_user_profile')?['id']}/$ref"
                                     }
-                                }
-                            },
-                            "runAfter": {
-                                "Add_Members_and_Owners": [
-                                    "Succeeded"
-                                ]
-                            },
-                            "type": "Scope",
-                            "description": "Add the service account to the group/team to post the welcome message, then remove it."
                         },
                         "Send_team_created_email": {
                             "runAfter": {
