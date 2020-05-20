@@ -93,6 +93,18 @@
                         }
                     },
                     "actions": {
+                             "Append_service_account_to_Owners_variable": {
+                            "runAfter": {
+                                "Get_service_account_user_profile": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "AppendToArrayVariable",
+                            "inputs": {
+                                "name": "Owners",
+                                "value": "https://graph.microsoft.com/v1.0/users/@{body('Get_service_account_user_profile')?['id']}"
+                            }
+                        },
                         "Check_if_SharePoint_site_exists": {
                             "actions": {
                                 "Check_SiteExists_value": {
@@ -1693,7 +1705,7 @@
                                                                 "description": "@{triggerBody()?['TeamDescription']}",
                                                                 "displayName": "@{triggerBody()?['Title']}",
                                                                 "owners@odata.bind": [
-                                                                    "@{first(variables('Owners'))}"
+                                                                   "@{first(variables('Owners'))}"
                                                                 ],
                                                                 "template@odata.bind": "https://graph.microsoft.com/beta/teamsTemplates('@{triggerBody()?['TemplateId']}')",
                                                                 "visibility": "@{variables('TemplateVisibility')}"
@@ -2208,45 +2220,9 @@
                         },
                         "type": "Foreach"
                     },
-                    "Post_welcome_message": {
-                        "actions": {
-                            "Add_service_account_to_group": {
-                                "runAfter": {
-                                },
-                                "type": "Http",
-                                "inputs": {
-                                    "authentication": {
-                                        "audience": "https://graph.microsoft.com",
-                                        "clientId": "@variables('ClientID')",
-                                        "secret": "@variables('ClientSecret')",
-                                        "tenant": "@variables('TenantID')",
-                                        "type": "ActiveDirectoryOAuth"
-                                    },
-                                    "body": {
-                                        "@@odata.id": "https://graph.microsoft.com/v1.0/users/@{body('Get_service_account_user_profile')?['id']}"
-                                    },
-                                    "method": "POST",
-                                    "uri": "@{variables('GraphURL')}/groups/@{variables('TeamID')}/owners/$ref"
-                                },
-                                "description": "Add service account to the group (team) so we can post the welcome message. We will remove the service account after."
-                            },
-                            "Delay": {
-                                "runAfter": {
-                                    "Add_service_account_to_group": [
-                                        "Succeeded"
-                                    ]
-                                },
-                                "type": "Wait",
-                                "inputs": {
-                                    "interval": {
-                                        "count": 3,
-                                        "unit": "Minute"
-                                    }
-                                }
-                            },
                             "Post_welcome_message_to_general_channel": {
                                 "runAfter": {
-                                    "Delay": [
+                                    "Create_team": [
                                         "Succeeded"
                                     ]
                                 },
@@ -2285,18 +2261,10 @@
                                     "method": "DELETE",
                                     "uri": "@{variables('GraphURL')}/groups/@{variables('TeamID')}/owners/@{body('Get_service_account_user_profile')?['id']}/$ref"
                                 }
-                            }
-                        },
-                        "runAfter": {
-                            "Create_team": [
-                                "Succeeded"
-                            ]
-                        },
-                        "type": "Scope"
-                    },
+                            },
                     "Send_team_created_email": {
                         "runAfter": {
-                            "Post_welcome_message": [
+                            "Remove_service_account_from_group": [
                                 "Succeeded"
                             ]
                         },
@@ -2317,6 +2285,7 @@
                             "path": "/Mail"
                         }
                     },
+                    
                     "Update_status_to_Team_Created": {
                         "runAfter": {
                             "Send_team_created_email": [
