@@ -364,7 +364,10 @@
                                                             "faxNumber": {
                                                             },
                                                             "givenName": {
-                                                                "type": "string"
+                                                                 "type": [
+                                                                                    "string",
+                                                                                    "null"
+                                                                                ]
                                                             },
                                                             "id": {
                                                                 "type": "string"
