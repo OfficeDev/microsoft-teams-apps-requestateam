@@ -416,9 +416,8 @@ function CreateAzureADApp {
         Write-Host "Waiting for app to finish creating..."
 
         Start-Sleep -s 60
-
-        $secretExpiryDate = (Get-Date).AddYears(1)
-        Write-Host "Created Azure AD App`nCLIENT SECRET WILL EXPIRE ON - "$secretExpiryDate.ToString("dd/MM/yyyy") -ForegroundColor Green
+        
+        Write-Host "Created Azure AD App" -ForegroundColor Green
 
         $appRegistrationCollection = az ad app list --display-name $appName
         $appRegistration = $appRegistrationCollection | ConvertFrom-Json
