@@ -418,7 +418,7 @@ function GetAzureADApp {
 
 function CreateAzureADApp {
     try {
-        Write-Host "### AZURE AD APP CREATION ###"
+        Write-Host "### AZURE AD APP CREATION ###" -ForegroundColor Yellow
 
         # Check if the app already exists - script has been previously executed
         $app = GetAzureADApp $appName
@@ -426,7 +426,6 @@ function CreateAzureADApp {
         if(-not ([string]::IsNullOrEmpty($app))) {
 
             # Update azure ad app registration using CLI
-
             Write-Host "Azure AD App '$appName' already exists - updating existing app..." -ForegroundColor Yellow
 
             az ad app update --id $app.appId --required-resource-accesses './manifest.json' --password $global:appSecret
@@ -441,7 +440,6 @@ function CreateAzureADApp {
         else
         {
             # Create the app
-
             Write-Host "Creating Azure AD App - '$appName'..." -ForegroundColor Yellow
 
              # Create azure ad app registration using CLI
@@ -471,7 +469,6 @@ function CreateAzureADApp {
 
         # Get service principal id for the app we created
         $global:appServicePrincipalId = Get-AzADServicePrincipal -DisplayName $appName | Select-Object -ExpandProperty Id
-        Write-Host $global:appServicePrincipalId
 
         Write-Host "### AZURE AD APP CREATION FINISHED ###" -ForegroundColor Green
     }
@@ -492,7 +489,6 @@ function DeployAutomationAssets {
         {
             #Automation account already exists - script has been previously executed
             #Delete the automation account and recreate
-
             Write-Host "Automation account already exists - deleting..." -ForegroundColor Yellow
 
             Remove-AzAutomationAccount -Name $automationAccountName -ResourceGroupName $ResourceGroupName -Force
@@ -532,7 +528,7 @@ function DeployAutomationAssets {
         # Publish runbooks
         Publish-AzAutomationRunbook -Name "CheckSiteExists" -ResourceGroupName $resourceGroupName -AutomationAccountName $automationAccountName
 
-        Write-Host "Finished importing and publishing runbooks" -ForegroundColor Yellow
+        Write-Host "Finished importing and publishing runbooks" -ForegroundColor Green
 
         Write-Host "Creating automation variables..." -ForegroundColor Yellow
 
