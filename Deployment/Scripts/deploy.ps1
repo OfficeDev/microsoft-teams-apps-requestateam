@@ -400,7 +400,7 @@ function ConfigureSharePointSite {
 
 # Get configured site classifications
 function GetSiteClassifications {
-    $groupDirectorySetting = Get-AzureADDirectorySetting | Where-Object DisplayName -eq "Group.Unified"
+    $groupDirectorySetting = AzureADPreview\Get-AzureADDirectorySetting | Where-Object DisplayName -eq "Group.Unified"
     $classifications = $groupDirectorySetting.Values | Where-Object Name -eq "ClassificationList" | Select-Object Value
 
     $global:siteClassifications = $classifications.Value
