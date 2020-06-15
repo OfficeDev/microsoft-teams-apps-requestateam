@@ -71,7 +71,7 @@
                     "triggers": {
                         "When_an_item_is_created_or_modified": {
                             "recurrence": {
-                                "frequency": "Week",
+                                "frequency": "Hour",
                                 "interval": 1
                             },
                             "splitOn": "@triggerBody()?['value']",
