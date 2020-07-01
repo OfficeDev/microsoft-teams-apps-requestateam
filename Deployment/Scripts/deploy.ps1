@@ -175,7 +175,7 @@ Param(
     $UseMSGraphBeta = $false,
 
     [Parameter(Mandatory = $false,
-    ValueFromPipeline = $true)]
+        ValueFromPipeline = $true)]
     [Bool]
     $IsEdu = $false
 )
@@ -250,11 +250,11 @@ function CreateRequestsSharePointSite {
 
         if (!$site) {
 
-                # Site will be created with current user connected to PnP as the owner/primary admin
-                New-PnPSite -Type TeamSite -Title $RequestsSiteName -Alias $requestsSiteAlias -Description $RequestsSiteDesc
+            # Site will be created with current user connected to PnP as the owner/primary admin
+            New-PnPSite -Type TeamSite -Title $RequestsSiteName -Alias $requestsSiteAlias -Description $RequestsSiteDesc
 
-                Write-Host "Site created`n**TEAMS REQUESTS SITE CREATION COMPLETE**" -ForegroundColor Green
-            }
+            Write-Host "Site created`n**TEAMS REQUESTS SITE CREATION COMPLETE**" -ForegroundColor Green
+        }
         
             
 
@@ -356,21 +356,21 @@ function ConfigureSharePointSite {
 
         $teamsTemplates = Import-Excel "$packageRootPath$settingsPath" -WorksheetName $teamsTemplatesWorksheetName
         foreach ($template in $teamsTemplates) {
-            If(!$isEdu -and ($template.BaseTemplateId -eq "educationStaff" -or $template.BaseTemplateId -eq "educationProfessionalLearningCommunity")) {
+            If (!$isEdu -and ($template.BaseTemplateId -eq "educationStaff" -or $template.BaseTemplateId -eq "educationProfessionalLearningCommunity")) {
                 # Tenant is not an EDU tenant  - do nothing
             }
-            else{
-            $listItemCreationInformation = New-Object Microsoft.SharePoint.Client.ListItemCreationInformation
-            $newItem = $teamsTemplatesList.AddItem($listItemCreationInformation)
-            $newItem["Title"] = $template.Title
-            $newItem["BaseTemplateType"] = $template.BaseTemplateType
-            $newItem["BaseTemplateId"] = $template.BaseTemplateId
-            $newItem["TeamId"] = $template.TeamId
-            $newItem["Description"] = $template.Description
-            $newItem["FirstPartyTemplate"] = $template.FirstPartyTemplate
-            $newItem["TeamVisibility"] = $template.TeamVisibility
-            $newitem.Update()
-            $context.ExecuteQuery()
+            else {
+                $listItemCreationInformation = New-Object Microsoft.SharePoint.Client.ListItemCreationInformation
+                $newItem = $teamsTemplatesList.AddItem($listItemCreationInformation)
+                $newItem["Title"] = $template.Title
+                $newItem["BaseTemplateType"] = $template.BaseTemplateType
+                $newItem["BaseTemplateId"] = $template.BaseTemplateId
+                $newItem["TeamId"] = $template.TeamId
+                $newItem["Description"] = $template.Description
+                $newItem["FirstPartyTemplate"] = $template.FirstPartyTemplate
+                $newItem["TeamVisibility"] = $template.TeamVisibility
+                $newitem.Update()
+                $context.ExecuteQuery()
             }
         }
         Write-Host "Added templates to Teams Templates list" -ForegroundColor Green
@@ -380,8 +380,7 @@ function ConfigureSharePointSite {
         # Check if service account already exists in the site (service account is the same user that is authenticated to PnP)
         $user = Get-PnPUser | Where-Object Email -eq $ServiceAccountUPN
 
-        if($null -eq $user)
-        {
+        if ($null -eq $user) {
             # Get owners group
             $group = Get-PnPGroup | Where-Object Title -Match "Owners"
             
@@ -400,7 +399,7 @@ function ConfigureSharePointSite {
 
 # Get configured site classifications
 function GetSiteClassifications {
-    $groupDirectorySetting = AzureADPreview\Get-AzureADDirectorySetting | Where-Object DisplayName -eq "Group.Unified"
+    $groupDirectorySetting = Get-AzureADDirectorySetting | Where-Object DisplayName -eq "Group.Unified"
     $classifications = $groupDirectorySetting.Values | Where-Object Name -eq "ClassificationList" | Select-Object Value
 
     $global:siteClassifications = $classifications.Value
@@ -423,7 +422,7 @@ function CreateAzureADApp {
         # Check if the app already exists - script has been previously executed
         $app = GetAzureADApp $appName
 
-        if(-not ([string]::IsNullOrEmpty($app))) {
+        if (-not ([string]::IsNullOrEmpty($app))) {
 
             # Update azure ad app registration using CLI
             Write-Host "Azure AD App '$appName' already exists - updating existing app..." -ForegroundColor Yellow
@@ -437,12 +436,11 @@ function CreateAzureADApp {
             Write-Host "Updated Azure AD App" -ForegroundColor Green
 
         } 
-        else
-        {
+        else {
             # Create the app
             Write-Host "Creating Azure AD App - '$appName'..." -ForegroundColor Yellow
 
-             # Create azure ad app registration using CLI
+            # Create azure ad app registration using CLI
             az ad app create --display-name $appName --required-resource-accesses './manifest.json' --password $global:appSecret --end-date '2299-12-31T11:59:59+00:00'
 
             Write-Host "Waiting for app to finish creating..."
@@ -485,8 +483,7 @@ function DeployAutomationAssets {
 
         $automationAccount = Get-AzAutomationAccount | Where-Object AutomationAccountName -eq $automationAccountName
 
-        if($null -ne $automationAccount)
-        {
+        if ($null -ne $automationAccount) {
             #Automation account already exists - script has been previously executed
             #Delete the automation account and recreate
             Write-Host "Automation account already exists - deleting..." -ForegroundColor Yellow
@@ -669,13 +666,22 @@ function CreateRoleAssignments() {
 function ValidateAzureLocation {
     $locations = Get-AzLocation
     
-    $global:location = $Location.Replace(" ","").ToLower()
+    $global:location = $Location.Replace(" ", "").ToLower()
 
     # Validate that the location exists
-    if($null -eq ($locations | Where-Object Location -eq $global:location)) {
+    if ($null -eq ($locations | Where-Object Location -eq $global:location)) {
         throw "Invalid Azure Location. Please provide a valid location. See this list - https://azure.microsoft.com/en-gb/global-infrastructure/locations/"
 
     }
+    
+    # Validate that the region supports Azure automation (https://azure.microsoft.com/en-gb/global-infrastructure/services/?products=automation&regions=all)
+    If (($global:location -eq "southafricawest") -or ($global:location -eq "australiacentral2") -or ($global:location -eq "southafricawest") -or ($global:location -eq "canadaeast") -or ($global:location -eq "chinaeast") -or ($global:location -eq "germanynorth") -or ($global:location -eq "southindia") `
+            -or ($global:location -eq "westindia") -or ($global:location -eq "japaneast") -or ($global:location -eq "koreasouth") -or ($global:location -eq "switzerlandnorth") -or ($global:location -eq "switzerlandnwest") -or ($global:location -eq "uaecentral") -or ($global:location -eq "ukwest")) {
+     
+        throw "Azure location does not support Automation. See this list for regions which support Automation - https://azure.microsoft.com/en-gb/global-infrastructure/services/?products=automation&regions=all"
+     
+    }
+    
 }
 
 
