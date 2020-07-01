@@ -400,28 +400,61 @@ function ConfigureSharePointSite {
 
 # Get configured site classifications
 function GetSiteClassifications {
-    $groupDirectorySetting = Get-AzureADDirectorySetting | Where-Object DisplayName -eq "Group.Unified"
+    $groupDirectorySetting = AzureADPreview\Get-AzureADDirectorySetting | Where-Object DisplayName -eq "Group.Unified"
     $classifications = $groupDirectorySetting.Values | Where-Object Name -eq "ClassificationList" | Select-Object Value
 
     $global:siteClassifications = $classifications.Value
 }
 
+# Gets the azure ad app
+function GetAzureADApp {
+    param ($appName)
+
+    $app = az ad app list --display-name $appName | ConvertFrom-Json
+
+    return $app
+
+}
+
 function CreateAzureADApp {
     try {
-        Write-Host "### AZURE AD APP CREATION ###`nCreating Azure AD App - '$appName'..." -ForegroundColor Yellow
-        
-        # Create azure ad app registration using CLI
-        az ad app create --display-name $appName --required-resource-accesses './manifest.json' --password $global:appSecret --end-date '2299-12-31T11:59:59+00:00'
+        Write-Host "### AZURE AD APP CREATION ###" -ForegroundColor Yellow
 
-        Write-Host "Waiting for app to finish creating..."
+        # Check if the app already exists - script has been previously executed
+        $app = GetAzureADApp $appName
 
-        Start-Sleep -s 60
-        
-        Write-Host "Created Azure AD App" -ForegroundColor Green
+        if(-not ([string]::IsNullOrEmpty($app))) {
 
-        $appRegistrationCollection = az ad app list --display-name $appName
-        $appRegistration = $appRegistrationCollection | ConvertFrom-Json
-        $global:appId = $appRegistration.appId
+            # Update azure ad app registration using CLI
+            Write-Host "Azure AD App '$appName' already exists - updating existing app..." -ForegroundColor Yellow
+
+            az ad app update --id $app.appId --required-resource-accesses './manifest.json' --password $global:appSecret
+
+            Write-Host "Waiting for app to finish updating..."
+
+            Start-Sleep -s 60
+
+            Write-Host "Updated Azure AD App" -ForegroundColor Green
+
+        } 
+        else
+        {
+            # Create the app
+            Write-Host "Creating Azure AD App - '$appName'..." -ForegroundColor Yellow
+
+             # Create azure ad app registration using CLI
+            az ad app create --display-name $appName --required-resource-accesses './manifest.json' --password $global:appSecret --end-date '2299-12-31T11:59:59+00:00'
+
+            Write-Host "Waiting for app to finish creating..."
+
+            Start-Sleep -s 60
+            
+            Write-Host "Created Azure AD App" -ForegroundColor Green
+
+        }
+
+        $app = GetAzureADApp $appName
+        $global:appId = $app.appId
 
         Write-Host "Granting admin content for Microsoft Graph..." -ForegroundColor Yellow
 
@@ -449,11 +482,32 @@ function CreateAzureADApp {
 function DeployAutomationAssets {
     try {
         Write-Host "Creating and deploying automation assets..." -ForegroundColor Yellow
+
+        $automationAccount = Get-AzAutomationAccount | Where-Object AutomationAccountName -eq $automationAccountName
+
+        if($null -ne $automationAccount)
+        {
+            #Automation account already exists - script has been previously executed
+            #Delete the automation account and recreate
+            Write-Host "Automation account already exists - deleting..." -ForegroundColor Yellow
+
+            Remove-AzAutomationAccount -Name $automationAccountName -ResourceGroupName $ResourceGroupName -Force
+            
+            Write-Host "Automation account deleted" -ForegroundColor Green
+            
+        }
         
+        Write-Host "Creating automation account..." -ForegroundColor Yellow
+
         New-AzAutomationAccount -Name $automationAccountName -Location $global:location -ResourceGroupName $ResourceGroupName
+
+        Write-Host "Finished creating automation account" -ForegroundColor Green
 
         # TODO - Make content links into variables
         # Import automation modules - wait for each module to import before continuing 
+
+        Write-Host "Importing automation modules..." -ForegroundColor Yellow
+
         New-AzAutomationModule -AutomationAccountName $automationAccountName -Name "Az.Accounts" -ContentLink "https://devopsgallerystorage.blob.core.windows.net/packages/az.accounts.1.6.2.nupkg" -ResourceGroupName $ResourceGroupName
 
         while ((Get-AzAutomationModule -Name "Az.Accounts" -ResourceGroupName $ResourceGroupName -AutomationAccountName $automationAccountName).ProvisioningState -eq "Creating") {
@@ -461,6 +515,10 @@ function DeployAutomationAssets {
         }
                
         New-AzAutomationModule -AutomationAccountName $automationAccountName -Name "SharePointPnPPowerShellOnline" -ContentLink "https://devopsgallerystorage.blob.core.windows.net/packages/sharepointpnppowershellonline.3.12.1908.1.nupkg" -ResourceGroupName $ResourceGroupName
+
+        Write-Host "Finished importing automation modules" -ForegroundColor Green
+
+        Write-Host "Importing and publishing runbooks..." -ForegroundColor Yellow
 
         # Import automation runbooks
         Import-AzAutomationRunbook -Name "CheckSiteExists" -Path "./runbooks/checksiteexists.ps1" `
@@ -470,13 +528,23 @@ function DeployAutomationAssets {
         # Publish runbooks
         Publish-AzAutomationRunbook -Name "CheckSiteExists" -ResourceGroupName $resourceGroupName -AutomationAccountName $automationAccountName
 
+        Write-Host "Finished importing and publishing runbooks" -ForegroundColor Green
+
+        Write-Host "Creating automation variables..." -ForegroundColor Yellow
+
         # Create variables
         New-AzAutomationVariable -AutomationAccountName $automationAccountName -Name "appClientId" -Encrypted $False -Value $global:appId -ResourceGroupName $ResourceGroupName
         New-AzAutomationVariable -AutomationAccountName $automationAccountName -Name "appSecret" -Encrypted $true -Value $global:appSecret -ResourceGroupName $ResourceGroupName
 
+        Write-Host "Finished creating automation variables" -ForegroundColor Green
+
+        Write-Host "Creating role assignments..." -ForegroundColor Yellow
+
         # Create the role assignments
         New-AzRoleAssignment -ObjectId $global:appServicePrincipalId -RoleDefinitionName "Automation Job Operator" -ResourceName $automationAccountName -ResourceType Microsoft.Automation/automationAccounts -ResourceGroupName $ResourceGroupName
         New-AzRoleAssignment -ObjectId $global:appServicePrincipalId -RoleDefinitionName "Automation Runbook Operator" -ResourceName $automationAccountName -ResourceType Microsoft.Automation/automationAccounts -ResourceGroupName $ResourceGroupName
+
+        Write-Host "Finished creating role assignments" -ForegroundColor Green
         
         Write-Host "Finished automation assets deployment" -ForegroundColor Green
 
