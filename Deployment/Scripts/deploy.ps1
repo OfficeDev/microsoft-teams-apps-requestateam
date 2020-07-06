@@ -189,12 +189,12 @@ If (-not (Test-Path -Path "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2")) {
 }
 
 # Install required modules
-Install-Module microsoft.online.sharepoint.powershell -Scope CurrentUser
-Install-Module SharePointPnPPowerShellOnline -Scope CurrentUser -MinimumVersion 3.19.2003.0 -Force
-Install-Module ImportExcel -Scope CurrentUser
-Install-Module Az -AllowClobber -Scope CurrentUser
-Install-Module AzureADPreview -Scope CurrentUser
-Install-Module WriteAscii -Scope CurrentUser
+#Install-Module microsoft.online.sharepoint.powershell -Scope CurrentUser
+#Install-Module SharePointPnPPowerShellOnline -Scope CurrentUser -MinimumVersion 3.19.2003.0 -Force
+#Install-Module ImportExcel -Scope CurrentUser
+#Install-Module Az -AllowClobber -Scope CurrentUser
+#Install-Module AzureADPreview -Scope CurrentUser
+#Install-Module WriteAscii -Scope CurrentUser
 
 # Variables
 $packageRootPath = "..\"
@@ -229,6 +229,9 @@ $spoConnectionName = "teamsautomate-spo"
 $o365OutlookConnectionName = "teamsautomate-o365outlook"
 $o365UsersConnectionName = "teamsautomate-o365users"
 $teamsConnectionName = "teamsautomate-teams"
+
+# Key vault name
+$keyVaultName = "teamsautomate-kv"
 
 # Global variables
 $global:context = $null
@@ -476,6 +479,31 @@ function CreateAzureADApp {
         $errorMessage = $_.Exception.Message
         Write-Host "Error occured while creating an Azure AD App: $errorMessage" -ForegroundColor Red
     }
+}
+
+function CreateConfigureKeyVault {
+    Write-Host "Creating/Updating Key Vault and setting secrets..." -ForegroundColor Yellow
+
+    # Use the tenant name in the key vault name to ensure it is unique - first 7 characters only due to maximum allowed length of key vault names (24 characters)
+    $keyVaultName = $TenantName.Substring(0,7) + "-$keyVaultName"
+
+    # Check if the key vault already exists
+    $keyVault = Get-AzKeyVault -Name $keyVaultName
+
+    if($null -eq $keyVault)
+    {
+    # Use the tenant name in the key vault name to ensure it is unique - first 8 characters only due to maximum allowed length of key vault names
+    $keyVault = New-AzKeyVault -Name $keyVaultName -ResourceGroupName $ResourceGroupName -Location $Location
+    }
+
+    # Create/update the secrets for the ad app id and password
+    Set-AzKeyVaultSecret -VaultName $keyVaultName -Name 'appid' -SecretValue (ConvertTo-SecureString -String $global:appId -AsPlainText -Force) | Out-Null
+    Set-AzKeyVaultSecret -VaultName $keyVaultName -Name 'appsecret' -SecretValue (ConvertTo-SecureString -String $global:appSecret -AsPlainText -Force) | Out-Null
+
+    Set-AzKeyVaultAccessPolicy -VaultName $keyVaultName -ObjectId $global:appServicePrincipalId -PermissionsToSecrets List,Get
+
+    Write-Host "Finished creating/updating Key Vault and setting secrets" -ForegroundColor Green
+
 }
 
 # Create automation account, import modules, deploy runbooks and configure access policies
@@ -726,6 +754,7 @@ Write-Host "Creating resource group $resourceGroupName..." -ForegroundColor Yell
 New-AzResourceGroup -Name $resourceGroupName -Location $global:location
 Write-Host "Created resource group" -ForegroundColor Green
 
+CreateConfigureKeyVault
 DeployAutomationAssets
 DeployARMTemplate
 
