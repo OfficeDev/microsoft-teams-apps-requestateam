@@ -21,6 +21,10 @@
         "location": {
             "defaultvalue": "",
             "type": "string"
+        },
+         "keyvaultName": {
+            "defaultvalue": "",
+            "type": "string"
         }
     },
     "resources": [
@@ -107,6 +111,7 @@
             "properties": {
                 "displayName": "Teams Automate - Key Vault",
                 "parameterValues": {
+                    "vaultName": "[parameters('keyvaultName')]",
                     "token:clientId": "[parameters('appId')]",
                     "token:clientSecret": "[parameters('appSecret')]",
                     "token:TenantId": "[parameters('tenantId')]",

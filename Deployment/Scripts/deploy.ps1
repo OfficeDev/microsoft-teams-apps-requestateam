@@ -189,12 +189,12 @@ If (-not (Test-Path -Path "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2")) {
 }
 
 # Install required modules
-#Install-Module microsoft.online.sharepoint.powershell -Scope CurrentUser
-#Install-Module SharePointPnPPowerShellOnline -Scope CurrentUser -MinimumVersion 3.19.2003.0 -Force
-#Install-Module ImportExcel -Scope CurrentUser
-#Install-Module Az -AllowClobber -Scope CurrentUser
-#Install-Module AzureADPreview -Scope CurrentUser
-#Install-Module WriteAscii -Scope CurrentUser
+Install-Module microsoft.online.sharepoint.powershell -Scope CurrentUser
+Install-Module SharePointPnPPowerShellOnline -Scope CurrentUser -MinimumVersion 3.19.2003.0 -Force
+Install-Module ImportExcel -Scope CurrentUser
+Install-Module Az -AllowClobber -Scope CurrentUser
+Install-Module AzureADPreview -Scope CurrentUser
+Install-Module WriteAscii -Scope CurrentUser
 
 # Variables
 $packageRootPath = "..\"
@@ -231,7 +231,7 @@ $o365UsersConnectionName = "teamsautomate-o365users"
 $teamsConnectionName = "teamsautomate-teams"
 
 # Key vault name
-$keyVaultName = "teamsautomate-kv"
+$keyvaultSuffix = "teamsautomate-kv"
 
 # Global variables
 $global:context = $null
@@ -243,6 +243,7 @@ $global:appSecret = $null
 $global:appServicePrincipalId = $null
 $global:siteClassifications = $null
 $global:location = $null
+$global:keyvaultName = $null
 
 # Create site and apply provisioning template
 function CreateRequestsSharePointSite {
@@ -413,10 +414,9 @@ function GetSiteClassifications {
 function GetAzureADApp {
     param ($appName)
 
-    $app = az ad app list --display-name $appName | ConvertFrom-Json
+    $app = az ad app list --filter "displayName eq '$appName'" | ConvertFrom-Json
 
     return $app
-
 }
 
 function CreateAzureADApp {
@@ -485,22 +485,22 @@ function CreateConfigureKeyVault {
     Write-Host "Creating/Updating Key Vault and setting secrets..." -ForegroundColor Yellow
 
     # Use the tenant name in the key vault name to ensure it is unique - first 7 characters only due to maximum allowed length of key vault names (24 characters)
-    $keyVaultName = $TenantName.Substring(0,7) + "-$keyVaultName"
+    $global:keyvaultName = $TenantName.Substring(0,7) + "-$keyvaultSuffix"
 
     # Check if the key vault already exists
-    $keyVault = Get-AzKeyVault -Name $keyVaultName
+    $keyVault = Get-AzKeyVault -Name $global:keyvaultName
 
     if($null -eq $keyVault)
     {
     # Use the tenant name in the key vault name to ensure it is unique - first 8 characters only due to maximum allowed length of key vault names
-    $keyVault = New-AzKeyVault -Name $keyVaultName -ResourceGroupName $ResourceGroupName -Location $Location
+    $keyVault = New-AzKeyVault -Name $global:keyvaultName -ResourceGroupName $ResourceGroupName -Location $Location
     }
 
     # Create/update the secrets for the ad app id and password
-    Set-AzKeyVaultSecret -VaultName $keyVaultName -Name 'appid' -SecretValue (ConvertTo-SecureString -String $global:appId -AsPlainText -Force) | Out-Null
-    Set-AzKeyVaultSecret -VaultName $keyVaultName -Name 'appsecret' -SecretValue (ConvertTo-SecureString -String $global:appSecret -AsPlainText -Force) | Out-Null
+    Set-AzKeyVaultSecret -VaultName $global:keyvaultName -Name 'appid' -SecretValue (ConvertTo-SecureString -String $global:appId -AsPlainText -Force) | Out-Null
+    Set-AzKeyVaultSecret -VaultName $global:keyvaultName -Name 'appsecret' -SecretValue (ConvertTo-SecureString -String $global:appSecret -AsPlainText -Force) | Out-Null
 
-    Set-AzKeyVaultAccessPolicy -VaultName $keyVaultName -ObjectId $global:appServicePrincipalId -PermissionsToSecrets List,Get
+    Set-AzKeyVaultAccessPolicy -VaultName $global:keyvaultName -ObjectId $global:appServicePrincipalId -PermissionsToSecrets List,Get
 
     Write-Host "Finished creating/updating Key Vault and setting secrets" -ForegroundColor Green
 
@@ -561,7 +561,7 @@ function DeployAutomationAssets {
         Write-Host "Creating automation variables..." -ForegroundColor Yellow
 
         # Create variables
-        New-AzAutomationVariable -AutomationAccountName $automationAccountName -Name "appClientId" -Encrypted $False -Value $global:appId -ResourceGroupName $ResourceGroupName
+        New-AzAutomationVariable -AutomationAccountName $automationAccountName -Name "appClientId" -Encrypted $true -Value $global:appId -ResourceGroupName $ResourceGroupName
         New-AzAutomationVariable -AutomationAccountName $automationAccountName -Name "appSecret" -Encrypted $true -Value $global:appSecret -ResourceGroupName $ResourceGroupName
 
         Write-Host "Finished creating automation variables" -ForegroundColor Green
@@ -588,8 +588,8 @@ function DeployAutomationAssets {
 function DeployARMTemplate {
     try { 
         # Deploy ARM templates
-        Write-Host "Deploying api connections..." -ForegroundColor Yellow
-        az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'connections.json' --parameters "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "location=$global:location"
+        Write-Host "Deploying api connections..." -ForegroundColor Yellow 
+        az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'connections.json' --parameters "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "location=$global:location" "keyvaultName=$global:keyvaultName"
 
         Write-Host "Deploying logic app..." -ForegroundColor Yellow
 
