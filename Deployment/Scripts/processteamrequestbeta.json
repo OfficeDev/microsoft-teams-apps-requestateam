@@ -98,8 +98,8 @@
                                     "inputs": {
                                         "authentication": {
                                             "audience": "https://graph.microsoft.com",
-                                            "clientId": "@variables('ClientID')",
-                                            "secret": "@variables('ClientSecret')",
+                                        "clientId": "@body('Get_Client_ID')?['value']",
+                                            "secret": "@body('Get_Client_Secret')?['value']",
                                             "tenant": "@variables('TenantID')",
                                             "type": "ActiveDirectoryOAuth"
                                         },
@@ -122,8 +122,8 @@
                                                     "inputs": {
                                                         "authentication": {
                                                             "audience": "https://graph.microsoft.com",
-                                                            "clientId": "@variables('ClientID')",
-                                                            "secret": "@variables('ClientSecret')",
+                                                    "clientId": "@body('Get_Client_ID')?['value']",
+                                                            "secret": "@body('Get_Client_Secret')?['value']",
                                                             "tenant": "@variables('TenantID')",
                                                             "type": "ActiveDirectoryOAuth"
                                                         },
@@ -194,8 +194,8 @@
                                                     "inputs": {
                                                         "authentication": {
                                                             "audience": "https://graph.microsoft.com",
-                                                            "clientId": "@variables('ClientID')",
-                                                            "secret": "@variables('ClientSecret')",
+                                                        "clientId": "@body('Get_Client_ID')?['value']",
+                                                            "secret": "@body('Get_Client_Secret')?['value']",
                                                             "tenant": "@variables('TenantID')",
                                                             "type": "ActiveDirectoryOAuth"
                                                         },
@@ -574,8 +574,8 @@
                                                             "inputs": {
                                                                 "authentication": {
                                                                     "audience": "https://graph.microsoft.com",
-                                                                    "clientId": "@variables('ClientID')",
-                                                                    "secret": "@variables('ClientSecret')",
+                                                             "clientId": "@body('Get_Client_ID')?['value']",
+                                                                    "secret": "@body('Get_Client_Secret')?['value']",
                                                                     "tenant": "@variables('TenantID')",
                                                                     "type": "ActiveDirectoryOAuth"
                                                                 },
@@ -707,8 +707,8 @@
                                             "inputs": {
                                                 "authentication": {
                                                     "audience": "https://graph.microsoft.com",
-                                                    "clientId": "@variables('ClientID')",
-                                                    "secret": "@variables('ClientSecret')",
+                                         "clientId": "@body('Get_Client_ID')?['value']",
+                                                    "secret": "@body('Get_Client_Secret')?['value']",
                                                     "tenant": "@variables('TenantID')",
                                                     "type": "ActiveDirectoryOAuth"
                                                 },
@@ -1001,8 +1001,8 @@
                                             "inputs": {
                                                 "authentication": {
                                                     "audience": "https://graph.microsoft.com",
-                                                    "clientId": "@variables('ClientID')",
-                                                    "secret": "@variables('ClientSecret')",
+                                                     "clientId": "@body('Get_Client_ID')?['value']",
+                                                    "secret": "@body('Get_Client_Secret')?['value']",
                                                     "tenant": "@variables('TenantID')",
                                                     "type": "ActiveDirectoryOAuth"
                                                 },
@@ -1025,8 +1025,8 @@
                                                             "inputs": {
                                                                 "authentication": {
                                                                     "audience": "https://graph.microsoft.com",
-                                                                    "clientId": "@variables('ClientID')",
-                                                                    "secret": "@variables('ClientSecret')",
+                                                                 "clientId": "@body('Get_Client_ID')?['value']",
+                                                                    "secret": "@body('Get_Client_Secret')?['value']",
                                                                     "tenant": "@variables('TenantID')",
                                                                     "type": "ActiveDirectoryOAuth"
                                                                 },
@@ -1163,8 +1163,8 @@
                                             "inputs": {
                                                 "authentication": {
                                                     "audience": "https://graph.microsoft.com",
-                                                    "clientId": "@variables('ClientID')",
-                                                    "secret": "@variables('ClientSecret')",
+                                                "clientId": "@body('Get_Client_ID')?['value']",
+                                                    "secret": "@body('Get_Client_Secret')?['value']",
                                                     "tenant": "@variables('TenantID')",
                                                     "type": "ActiveDirectoryOAuth"
                                                 },
@@ -1210,8 +1210,8 @@
                                                 "inputs": {
                                                     "authentication": {
                                                         "audience": "https://graph.microsoft.com",
-                                                        "clientId": "@variables('ClientID')",
-                                                        "secret": "@variables('ClientSecret')",
+                                                  "clientId": "@body('Get_Client_ID')?['value']",
+                                                        "secret": "@body('Get_Client_Secret')?['value']",
                                                         "tenant": "@variables('TenantID')",
                                                         "type": "ActiveDirectoryOAuth"
                                                     },
@@ -1268,8 +1268,8 @@
                                     "inputs": {
                                         "authentication": {
                                             "audience": "https://graph.microsoft.com",
-                                            "clientId": "@variables('ClientID')",
-                                            "secret": "@variables('ClientSecret')",
+                                           "clientId": "@body('Get_Client_ID')?['value']",
+                                            "secret": "@body('Get_Client_Secret')?['value']",
                                             "tenant": "@variables('TenantID')",
                                             "type": "ActiveDirectoryOAuth"
                                         },
@@ -1290,8 +1290,8 @@
                                     "inputs": {
                                         "authentication": {
                                             "audience": "https://graph.microsoft.com",
-                                            "clientId": "@variables('ClientID')",
-                                            "secret": "@variables('ClientSecret')",
+                                          "clientId": "@body('Get_Client_ID')?['value']",
+                                            "secret": "@body('Get_Client_Secret')?['value']",
                                             "tenant": "@variables('TenantID')",
                                             "type": "ActiveDirectoryOAuth"
                                         },
@@ -1554,9 +1554,45 @@
                             },
                             "type": "Scope"
                         },
-                        "Get_service_account_user_profile": {
+                              "Get_Client_ID": {
                             "runAfter": {
                                 "Initialize_ServiceAccountUPN_variable": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['keyvault']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/secrets/@{encodeURIComponent('appid')}/value"
+                            },
+                            "description": "Get Azure ad app client id from key vault."
+                        },
+                                "Get_Client_Secret": {
+                            "runAfter": {
+                                "Get_Client_ID": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['keyvault_']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/secrets/@{encodeURIComponent('appsecret')}/value"
+                            },
+                            "description": "Get Azure ad app client id from key vault."
+                        },
+                        "Get_service_account_user_profile": {
+                            "runAfter": {
+                                "Get_Client_Secret": [
                                     "Succeeded"
                                 ]
                             },
@@ -1587,43 +1623,9 @@
                                 ]
                             }
                         },
-                        "Initialize_ClientID_variable": {
-                            "runAfter": {
-                                "Initialize_TenantID_variable": [
-                                    "Succeeded"
-                                ]
-                            },
-                            "type": "InitializeVariable",
-                            "inputs": {
-                                "variables": [
-                                    {
-                                        "name": "ClientID",
-                                        "type": "String",
-                                        "value": "[parameters('appId')]"
-                                    }
-                                ]
-                            }
-                        },
-                        "Initialize_ClientSecret_variable": {
-                            "runAfter": {
-                                "Initialize_ClientID_variable": [
-                                    "Succeeded"
-                                ]
-                            },
-                            "type": "InitializeVariable",
-                            "inputs": {
-                                "variables": [
-                                    {
-                                        "name": "ClientSecret",
-                                        "type": "String",
-                                        "value": "[parameters('appSecret')]"
-                                    }
-                                ]
-                            }
-                        },
                         "Initialize_GraphURL_variable": {
                             "runAfter": {
-                                "Initialize_ClientSecret_variable": [
+                                "Initialize_TenantID_variable": [
                                     "Succeeded"
                                 ]
                             },
@@ -1949,8 +1951,8 @@
                                     "inputs": {
                                         "authentication": {
                                             "audience": "https://graph.microsoft.com",
-                                            "clientId": "@variables('ClientID')",
-                                            "secret": "@variables('ClientSecret')",
+                                          "clientId": "@body('Get_Client_ID')?['value']",
+                                    "secret": "@body('Get_Client_Secret')?['value']",
                                             "tenant": "@variables('TenantID')",
                                             "type": "ActiveDirectoryOAuth"
                                         },
@@ -2036,6 +2038,11 @@
                                 "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/teamsautomate-automation')]",
                                 "connectionName": "teamsautomate-automation",
                                 "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/azureautomation')]"
+                            },
+                                       "keyvault": {
+                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/teamsautomate-kv')]",
+                                "connectionName": "keyvault",
+                                 "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/keyvault')]"
                             },
                             "office365": {
                                 "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/teamsautomate-o365outlook')]",
