@@ -1582,7 +1582,7 @@
                             "inputs": {
                                 "host": {
                                     "connection": {
-                                        "name": "@parameters('$connections')['keyvault_']['connectionId']"
+                                        "name": "@parameters('$connections')['keyvault']['connectionId']"
                                     }
                                 },
                                 "method": "get",
