@@ -674,7 +674,7 @@ function AuthoriseLogicAppConnection($resourceId) {
     $parameters = @{
         "parameters" = , @{
             "parameterName" = "token";
-            "redirectUrl"   = "https://ema1.exp.azure.com/ema/default/authredirect"
+            "redirectUrl"   = "http://localhost"
         }
     }
 
