@@ -473,8 +473,8 @@
                                     }
                                 }
                             },
-                            "runAfter": {
-                                "Get_service_account_user_profile": [
+                           "runAfter": {
+                                "Append_service_account_to_Owners_variable": [
                                     "Succeeded"
                                 ]
                             },
