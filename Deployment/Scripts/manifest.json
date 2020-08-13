@@ -1,26 +1,17 @@
 [
     {
-        "resourceAppId": "00000002-0000-0000-c000-000000000000",
-        "resourceAccess": [
-            {
-                "id": "5778995a-e1bf-45b8-affa-663a9f3f4d04",
-                "type": "Role"
-            }
-        ]
-    },
-    {
         "resourceAppId": "00000003-0000-0000-c000-000000000000",
         "resourceAccess": [
             {
-                "id": "09850681-111b-4a89-9bed-3f2cae46d706",
-                "type": "Role"
-            },
-            {
-                "id": "741f803b-c850-494e-b5df-cde7c675a1ca",
+                "id": "7ab1d382-f21e-4acd-a863-ba3e13f7da61",
                 "type": "Role"
             },
             {
                 "id": "62a82d76-70ea-41e2-9197-370581804d09",
+                "type": "Role"
+            },
+            {
+                "id": "df021288-bdef-4463-88db-98f22de89214",
                 "type": "Role"
             }
         ]
