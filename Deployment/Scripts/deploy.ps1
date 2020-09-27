@@ -825,6 +825,7 @@ $azConnect = Connect-AzAccount -Subscription $SubscriptionId -Tenant $TenantId
 ValidateKeyVault
 ValidateAzureLocation
 Write-Host "Launching Azure AD sign-in..." -ForegroundColor Yellow
+Import-Module AzureADPreview
 Connect-AzureAD
 Write-Host "Launching Azure CLI sign-in..." -ForegroundColor Yellow
 $cliLogin = az login
