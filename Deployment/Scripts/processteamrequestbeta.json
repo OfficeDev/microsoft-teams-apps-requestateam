@@ -534,9 +534,7 @@
                                                             },
                                                             "streetAddress": {
                                                             },
-                                                            "surname": {
-                                                                "type": "string"
-                                                            },
+                                                            "surname": { },
                                                             "usageLocation": {
                                                                 "type": "string"
                                                             },
