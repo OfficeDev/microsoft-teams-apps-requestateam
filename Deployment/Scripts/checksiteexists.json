@@ -1,0 +1,322 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "defaultvalue": "",
+            "type": "string"
+        },
+        "resourceGroupName": {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "subscriptionId": {
+            "defaultValue": "",
+            "type": "string"
+        },
+         "spoTenantName": {
+            "defaultValue": "",
+            "type": "string"
+        }
+
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "CheckSiteExists",
+            "location": "[parameters('location')]",
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "manual": {
+                            "type": "Request",
+                            "kind": "Http",
+                            "inputs": {
+                                "method": "POST",
+                                "schema": {
+                                    "properties": {
+                                        "siteUrl": {
+                                            "type": "string"
+                                        },
+                                        "tenantId": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "actions": {
+                        "Check_Status_code": {
+                            "actions": {
+                                "Set_ReturnBody_variable_-_exists_in_SPO": {
+                                    "runAfter": {},
+                                    "type": "SetVariable",
+                                    "inputs": {
+                                        "name": "ReturnBody",
+                                        "value": {
+                                            "exists": true,
+                                            "source": "tenant"
+                                        }
+                                    }
+                                }
+                            },
+                            "runAfter": {
+                                "Check_if_site_collection_exists": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "else": {
+                                "actions": {
+                                    "Check_ErrorInfo_is_null": {
+                                        "actions": {
+                                            "Set_ReturnBody_variable_-_exists_in_recycle_in": {
+                                                "runAfter": {},
+                                                "type": "SetVariable",
+                                                "inputs": {
+                                                    "name": "ReturnBody",
+                                                    "value": {
+                                                        "exists": true,
+                                                        "source": "recycle bin"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Get_site_collection_from_recycle_bin": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "else": {
+                                            "actions": {
+                                                "Set_ReturnBody_variable_-_not_found_in_recycle_bin": {
+                                                    "runAfter": {},
+                                                    "type": "SetVariable",
+                                                    "inputs": {
+                                                        "name": "ReturnBody",
+                                                        "value": {
+                                                            "exists": false,
+                                                            "source": "@null"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "expression": {
+                                            "and": [
+                                                {
+                                                    "equals": [
+                                                        "@body('Get_site_collection_from_recycle_bin')?[0].ErrorInfo",
+                                                        "@null"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "type": "If",
+                                        "description": "Check ErrorInfo property is null - site exists in recycle bin. If the call fails (site doesn't exist) it will return a 404 error."
+                                    },
+                                    "Get_access_token_for_admin_center": {
+                                        "runAfter": {},
+                                        "type": "Http",
+                                        "inputs": {
+                                            "body": "@concat('client_id=',body('Get_Client_ID')?['value'],uriComponentToString('%40'),triggerBody()?['tenantId'],'&client_secret=',body('Get_Client_Secret')?['value'],'&grant_type=client_credentials&resource=00000003-0000-0ff1-ce00-000000000000/',replace(variables('SPOTenantName'),'.sharepoint.com','-admin.sharepoint.com'),uriComponentToString('%40'),triggerBody()?['tenantId'])",
+                                            "headers": {
+                                                "Content-Type": "application/x-www-form-urlencoded"
+                                            },
+                                            "method": "POST",
+                                            "uri": "https://accounts.accesscontrol.windows.net/@{triggerBody()?['tenantId']}/tokens/OAuth/2"
+                                        }
+                                    },
+                                    "Get_site_collection_from_recycle_bin": {
+                                        "runAfter": {
+                                            "Get_access_token_for_admin_center": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "Http",
+                                        "inputs": {
+                                            "body": "<Request AddExpandoFieldTypeSuffix=\"true\" SchemaVersion=\"15.0.0.0\" LibraryVersion=\"16.0.0.0\" ApplicationName=\"${config.applicationName}\" xmlns=\"http://schemas.microsoft.com/sharepoint/clientquery/2009\">\n\t<Actions>\n\t\t<Query Id=\"5\" ObjectPathId=\"3\">\n\t\t\t<Query SelectAllProperties=\"false\">\n\t\t\t\t<Properties/>\n\t\t\t</Query>\n\t\t</Query>\n\t</Actions>\n\t<ObjectPaths>\n\t\t<Constructor Id=\"1\" TypeId=\"{268004ae-ef6b-4e9b-8425-127220d84719}\"/>\n\t\t<Method Id=\"3\" ParentId=\"1\" Name=\"GetDeletedSitePropertiesByUrl\">\n\t\t\t<Parameters>\n\t\t\t\t<Parameter Type=\"String\">@{triggerBody()?['siteUrl']}</Parameter>\n\t\t\t</Parameters>\n\t\t</Method>\n\t</ObjectPaths>\n</Request>\n",
+                                            "headers": {
+                                                "Accept": "*/*",
+                                                "Authorization": "Bearer @{body('Get_access_token_for_admin_center')['access_token']}",
+                                                "Content-Type": "application/xml"
+                                            },
+                                            "method": "POST",
+                                            "uri": "https://@{replace(variables('SPOTenantName'),'.sharepoint.com','-admin.sharepoint.com')}/_vti_bin/client.svc/ProcessQuery"
+                                        }
+                                    }
+                                }
+                            },
+                            "expression": {
+                                "and": [
+                                    {
+                                        "equals": [
+                                            "@outputs('Get_Status_code')",
+                                            200
+                                        ]
+                                    }
+                                ]
+                            },
+                            "type": "If"
+                        },
+                        "Check_if_site_collection_exists": {
+                            "actions": {
+                                "Get_Access_Token": {
+                                    "runAfter": {},
+                                    "type": "Http",
+                                    "inputs": {
+                                        "body": "@concat('client_id=',body('Get_Client_ID')?['value'],uriComponentToString('%40'),triggerBody()?['tenantId'],'&client_secret=',body('Get_Client_Secret')?['value'],'&grant_type=client_credentials&resource=00000003-0000-0ff1-ce00-000000000000/',variables('SPOTenantName'),uriComponentToString('%40'),triggerBody()?['tenantId'])",
+                                        "headers": {
+                                            "Content-Type": "application/x-www-form-urlencoded"
+                                        },
+                                        "method": "POST",
+                                        "uri": "https://accounts.accesscontrol.windows.net/@{triggerBody()?['tenantId']}/tokens/OAuth/2"
+                                    }
+                                },
+                                "Get_Status_code": {
+                                    "runAfter": {
+                                        "Get_site_collection_from_SPO_Tenant": [
+                                            "Succeeded",
+                                            "Failed"
+                                        ]
+                                    },
+                                    "type": "Compose",
+                                    "inputs": "@outputs('Get_site_collection_from_SPO_Tenant')['statusCode']"
+                                },
+                                "Get_site_collection_from_SPO_Tenant": {
+                                    "runAfter": {
+                                        "Get_Access_Token": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "type": "Http",
+                                    "inputs": {
+                                        "headers": {
+                                            "Accept": "application/json",
+                                            "Authorization": "Bearer @{body('Get_access_token')?['access_token']}",
+                                            "Content-Type": "application/json"
+                                        },
+                                        "method": "GET",
+                                        "uri": "@{triggerBody()?['siteUrl']}/_api/web"
+                                    }
+                                }
+                            },
+                            "runAfter": {
+                                "Initialize_ReturnBody_variable": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Scope"
+                        },
+                        "Get_Client_ID": {
+                            "runAfter": {},
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['keyvault']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/secrets/@{encodeURIComponent('appid')}/value"
+                            },
+                            "description": "Get Azure ad app client id from key vault."
+                        },
+                        "Get_Client_Secret": {
+                            "runAfter": {
+                                "Get_Client_ID": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['keyvault']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/secrets/@{encodeURIComponent('appsecret')}/value"
+                            },
+                            "description": "Get Azure ad app secret from key vault."
+                        },
+                        "Initialize_ReturnBody_variable": {
+                            "runAfter": {
+                                "Initialize_SPOTenantName_variable": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "ReturnBody",
+                                        "type": "object"
+                                    }
+                                ]
+                            }
+                        },
+                        "Initialize_SPOTenantName_variable": {
+                            "runAfter": {
+                                "Get_Client_Secret": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "SPOTenantName",
+                                        "type": "string",
+                                        "value": "[parameters('spoTenantName')]"
+                                    }
+                                ]
+                            }
+                        },
+                        "Response": {
+                            "runAfter": {
+                                "Check_Status_code": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Response",
+                            "kind": "Http",
+                            "inputs": {
+                                "body": "@variables('ReturnBody')",
+                                "headers": {
+                                    "Accept": "application/json",
+                                    "Content-Type": "application/json"
+                                },
+                                "statusCode": 200
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                                    "keyvault": {
+                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/teamsautomate-kv')]",
+                                "connectionName": "teamsautomate-kv",
+                                 "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/keyvault')]"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

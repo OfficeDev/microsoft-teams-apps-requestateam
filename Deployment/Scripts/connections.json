@@ -85,24 +85,6 @@
                 }
             }
         },
-        {
-            "type": "Microsoft.Web/connections",
-            "apiVersion": "2016-06-01",
-            "name": "teamsautomate-automation",
-            "location": "[parameters('location')]",
-            "properties": {
-                "displayName": "Teams Automate - Azure Automation",
-                "parameterValues": {
-                    "token:clientId": "[parameters('appId')]",
-                    "token:clientSecret": "[parameters('appSecret')]",
-                    "token:TenantId": "[parameters('tenantId')]",
-                    "token:grantType": "client_credentials"
-                },
-                "api": {
-                    "id": "[concat('subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/azureautomation')]"
-                }
-            }
-        },
          {
             "type": "Microsoft.Web/connections",
             "apiVersion": "2016-06-01",

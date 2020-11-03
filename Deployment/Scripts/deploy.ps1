@@ -4,8 +4,7 @@
 
         -SharePoint Site
         -Azure AD App Registration
-        -Azure Automation Account & Runbooks
-        -Logic App
+        -Logic Apps
 
 .DESCRIPTION
     Deploys the Teams Automate solution (excluding the PowerApp and Flows).
@@ -230,9 +229,6 @@ $tenantAdminUrl = "https://$tenantName-admin.sharepoint.com"
 $requestsSiteAlias = $RequestsSiteName -replace (' ', '')
 $requestsSiteUrl = "https://$tenantName.sharepoint.com/$ManagedPath/$requestsSiteAlias"
 
-# Automation account settings
-$automationAccountName = "teamsautomate-auto"
-
 # API connection names
 $spoConnectionName = "teamsautomate-spo"
 $o365OutlookConnectionName = "teamsautomate-o365outlook"
@@ -325,8 +321,6 @@ catch {
     Write-Host "Error occured while creating of the SharePoint site: $errorMessage" -ForegroundColor Red
 }
 }
-
-
 
 # Configure the new site
 function ConfigureSharePointSite {
@@ -553,83 +547,6 @@ function CreateConfigureKeyVault {
 
 }
 
-# Create automation account, import modules, deploy runbooks and configure access policies
-function DeployAutomationAssets {
-    try {
-        Write-Host "Creating and deploying automation assets..." -ForegroundColor Yellow
-
-        $automationAccount = Get-AzAutomationAccount | Where-Object AutomationAccountName -eq $automationAccountName
-
-        if ($null -ne $automationAccount) {
-            #Automation account already exists - script has been previously executed
-            #Delete the automation account and recreate
-            Write-Host "Automation account already exists - deleting..." -ForegroundColor Yellow
-
-            Remove-AzAutomationAccount -Name $automationAccountName -ResourceGroupName $ResourceGroupName -Force
-            
-            Write-Host "Automation account deleted" -ForegroundColor Green
-            
-        }
-        
-        Write-Host "Creating automation account..." -ForegroundColor Yellow
-
-        New-AzAutomationAccount -Name $automationAccountName -Location $global:location -ResourceGroupName $ResourceGroupName
-
-        Write-Host "Finished creating automation account" -ForegroundColor Green
-
-        # TODO - Make content links into variables
-        # Import automation modules - wait for each module to import before continuing 
-
-        Write-Host "Importing automation modules..." -ForegroundColor Yellow
-
-        New-AzAutomationModule -AutomationAccountName $automationAccountName -Name "Az.Accounts" -ContentLink "https://devopsgallerystorage.blob.core.windows.net/packages/az.accounts.1.6.2.nupkg" -ResourceGroupName $ResourceGroupName
-
-        while ((Get-AzAutomationModule -Name "Az.Accounts" -ResourceGroupName $ResourceGroupName -AutomationAccountName $automationAccountName).ProvisioningState -eq "Creating") {
-            Start-Sleep -Seconds 30
-        }
-               
-        New-AzAutomationModule -AutomationAccountName $automationAccountName -Name "SharePointPnPPowerShellOnline" -ContentLink "https://devopsgallerystorage.blob.core.windows.net/packages/sharepointpnppowershellonline.3.12.1908.1.nupkg" -ResourceGroupName $ResourceGroupName
-
-        Write-Host "Finished importing automation modules" -ForegroundColor Green
-
-        Write-Host "Importing and publishing runbooks..." -ForegroundColor Yellow
-
-        # Import automation runbooks
-        Import-AzAutomationRunbook -Name "CheckSiteExists" -Path "./runbooks/checksiteexists.ps1" `
-            -ResourceGroupName $resourceGroupName -AutomationAccountName $automationAccountName `
-            -Type PowerShell
-
-        # Publish runbooks
-        Publish-AzAutomationRunbook -Name "CheckSiteExists" -ResourceGroupName $resourceGroupName -AutomationAccountName $automationAccountName
-
-        Write-Host "Finished importing and publishing runbooks" -ForegroundColor Green
-
-        Write-Host "Creating automation variables..." -ForegroundColor Yellow
-
-        # Create variables
-        New-AzAutomationVariable -AutomationAccountName $automationAccountName -Name "appClientId" -Encrypted $False -Value $global:appId -ResourceGroupName $ResourceGroupName
-        New-AzAutomationVariable -AutomationAccountName $automationAccountName -Name "appSecret" -Encrypted $true -Value $global:appSecret -ResourceGroupName $ResourceGroupName
-
-        Write-Host "Finished creating automation variables" -ForegroundColor Green
-
-        Write-Host "Creating role assignments..." -ForegroundColor Yellow
-
-        # Create the role assignments
-        New-AzRoleAssignment -ObjectId $global:appServicePrincipalId -RoleDefinitionName "Automation Job Operator" -ResourceName $automationAccountName -ResourceType Microsoft.Automation/automationAccounts -ResourceGroupName $ResourceGroupName
-        New-AzRoleAssignment -ObjectId $global:appServicePrincipalId -RoleDefinitionName "Automation Runbook Operator" -ResourceName $automationAccountName -ResourceType Microsoft.Automation/automationAccounts -ResourceGroupName $ResourceGroupName
-
-        Write-Host "Finished creating role assignments" -ForegroundColor Green
-        
-        Write-Host "Finished automation assets deployment" -ForegroundColor Green
-
-    }
-    catch {
-        $errorMessage = $_.Exception.Message
-        Write-Host "Error occured while deploying Azure resources: $errorMessage" -ForegroundColor Red
-    }
-
-}
-
 # Deploy ARM template - currently only used for the logic app
 function DeployARMTemplate {
     try { 
@@ -637,17 +554,20 @@ function DeployARMTemplate {
         Write-Host "Deploying api connections..." -ForegroundColor Yellow
         az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'connections.json' --parameters "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "location=$global:location" "keyvaultName=$KeyVaultName"
 
-        Write-Host "Deploying logic app..." -ForegroundColor Yellow
+        Write-Host "Deploying logic apps..." -ForegroundColor Yellow
+
+        az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'checksiteexists.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "spoTenantName=$tenantName.sharepoint.com" "location=$location"
+  
 
         if ($UseMSGraphBeta) {
             Write-Host "Microsoft Graph beta endpoint will be used"
-            az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'processteamrequestbeta.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "automationAccountName=$automationAccountName" "requestsSiteUrl=$requestsSiteUrl" "requestsListId=$global:requestsListId" "location=$global:location" "serviceAccountUPN=$ServiceAccountUPN"
+            az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'processteamrequestbeta.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "requestsSiteUrl=$requestsSiteUrl" "requestsListId=$global:requestsListId" "location=$global:location" "serviceAccountUPN=$ServiceAccountUPN"
         }
         else {
-            az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'processteamrequestv1.0.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "automationAccountName=$automationAccountName" "requestsSiteUrl=$requestsSiteUrl" "requestsListId=$global:requestsListId" "templatesListId=$global:teamsTemplatesListId" "location=$global:location" "serviceAccountUPN=$ServiceAccountUPN"
+            az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'processteamrequestv1.0.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "requestsSiteUrl=$requestsSiteUrl" "requestsListId=$global:requestsListId" "templatesListId=$global:teamsTemplatesListId" "location=$global:location" "serviceAccountUPN=$ServiceAccountUPN"
         }
 
-        Write-Host "Finished deploying logic app" -ForegroundColor Green
+        Write-Host "Finished deploying logic apps" -ForegroundColor Green
     }
     catch {
         $errorMessage = $_.Exception.Message
@@ -725,18 +645,6 @@ function AuthoriseLogicAppConnections() {
     AuthoriseLogicAppConnection($teamsConnection.ResourceId)
 
     Write-Host "### LOGIC APP CONNECTIONS AUTHORISATION COMPLETE ###" -ForegroundColor Green
-}
-
-function CreateRoleAssignments() {
-
-    Write-Host "### AZURE ROLE ASSIGNMENTS ###`nCreating Role Assignments..." -ForegroundColor Yellow
-
-    # Create the role assignments
-    New-AzRoleAssignment -ObjectId $global:appServicePrincipalId -RoleDefinitionName "Automation Job Operator" -ResourceName $automationAccountName -ResourceType Microsoft.Automation/automationAccounts -ResourceGroupName $ResourceGroupName
-    New-AzRoleAssignment -ObjectId $global:appServicePrincipalId -RoleDefinitionName "Automation Runbook Operator" -ResourceName $automationAccountName -ResourceType Microsoft.Automation/automationAccounts -ResourceGroupName $ResourceGroupName
-
-    Write-Host "Role assignments created`n### AZURE ROLE ASSIGNMENTS COMPLETE ###" -ForegroundColor Green
-
 }
 
 # Check that the provided location is a valid Azure location
@@ -851,7 +759,6 @@ New-AzResourceGroup -Name $resourceGroupName -Location $global:location
 Write-Host "Created resource group" -ForegroundColor Green
 
 CreateConfigureKeyVault
-DeployAutomationAssets
 DeployARMTemplate
 
 Write-Host "Azure resources deployed`n### AZURE RESOURCES DEPLOYMENT COMPLETE ###" -ForegroundColor Green
