@@ -10,10 +10,6 @@
             "defaultValue": "",
             "type": "string"
         },
-        "automationAccountName": {
-            "defaultValue": "",
-            "type": "string"
-        },
         "appId": {
             "defaultValue": "",
             "type": "string"
@@ -642,35 +638,31 @@
                         },
                         "Check_if_SharePoint_site_exists": {
                             "actions": {
-                                "Check_SiteExists_value": {
+                                       "Check_response": {
                                     "actions": {
-                                        "Check_SiteExists_value_-_Deleted_group": {
-                                            "actions": {
-                                                "Terminate_-_Group_exists_in_recycle_in": {
-                                                    "runAfter": {
-                                                        "Update_status_to_creation_failed_-_Deleted_group": [
-                                                            "Succeeded"
-                                                        ]
-                                                    },
-                                                    "type": "Terminate",
-                                                    "inputs": {
-                                                        "runError": {
-                                                            "message": "Group exists in deleted groups."
-                                                        },
-                                                        "runStatus": "Failed"
-                                                    },
-                                                    "description": "Terminate the Logic App as the Group was found in the recycle bin. Group/Team creation will fail otherwise."
+                                        "Terminate_-_Site_exists": {
+                                            "runAfter": {
+                                                "Update_status_to_creation_failed_-_SP_site_exists": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "Terminate",
+                                            "inputs": {
+                                                "runError": {
+                                                    "message": "Team already exists @{body('Parse_checksiteexists_response')?['source']}"
                                                 },
-                                                "Update_status_to_creation_failed_-_Deleted_group": {
-                                                    "runAfter": {
-                                                    },
+                                                "runStatus": "Failed"
+                                            }
+                                        },
+                                        "Update_status_to_creation_failed_-_SP_site_exists": {
+                                            "runAfter": {},
                                                     "type": "ApiConnection",
                                                     "inputs": {
                                                         "body": {
                                                             "Status": {
                                                                 "Value": "Team Creation Failed"
                                                             },
-                                                            "StatusReason": "Team exists in deleted groups.",
+                                                          "StatusReason": "Team already exists.",
                                                             "Title": "@triggerBody()?['Title']"
                                                         },
                                                         "host": {
@@ -684,7 +676,7 @@
                                                 }
                                             },
                                             "runAfter": {
-                                                "Loop_through_deleted_groups": [
+                                                 "Parse_CheckSiteExists_response": [
                                                     "Succeeded"
                                                 ]
                                             },
@@ -692,7 +684,7 @@
                                                 "and": [
                                                     {
                                                         "equals": [
-                                                            "@variables('SiteExists')",
+                                                           "@body('Parse_CheckSiteExists_response')?['exists']",
                                                             "@true"
                                                         ]
                                                     }
@@ -700,286 +692,48 @@
                                             },
                                             "type": "If"
                                         },
-                                        "Get_deleted_groups": {
-                                            "runAfter": {
-                                            },
-                                            "type": "Http",
-                                            "inputs": {
-                                                "authentication": {
-                                                    "audience": "https://graph.microsoft.com",
-                                         "clientId": "@body('Get_Client_ID')?['value']",
-                                                    "secret": "@body('Get_Client_Secret')?['value']",
-                                                    "tenant": "@variables('TenantID')",
-                                                    "type": "ActiveDirectoryOAuth"
-                                                },
-                                                "method": "GET",
-                                                "uri": "@{variables('GraphURL')}/directory/deleteditems/microsoft.graph.group"
-                                            }
-                                        },
-                                        "Loop_through_deleted_groups": {
-                                            "foreach": "@body('Parse_deleted_groups_JSON')?['value']",
-                                            "actions": {
-                                                "Check_for_deleted_group": {
-                                                    "actions": {
-                                                        "Set_SiteExists_variable_-_Deleted_group": {
-                                                            "runAfter": {
-                                                            },
-                                                            "type": "SetVariable",
-                                                            "inputs": {
-                                                                "name": "SiteExists",
-                                                                "value": "@bool('true')"
-                                                            }
-                                                        }
-                                                    },
-                                                    "runAfter": {
-                                                    },
-                                                    "expression": {
-                                                        "and": [
-                                                            {
-                                                                "equals": [
-                                                                    "@toLower(items('Loop_through_deleted_groups')?['mailNickname'])",
-                                                                    "@toLower(triggerBody()?['TeamAlias'])"
-                                                                ]
-                                                            },
-                                                            {
-                                                                "equals": [
-                                                                    "@toLower(items('Loop_through_deleted_groups')?['displayName'])",
-                                                                    "@toLower(triggerBody()?['Title'])"
-                                                                ]
-                                                            }
-                                                        ]
-                                                    },
-                                                    "type": "If",
-                                                    "description": "Check if the request matches a deleted group."
-                                                }
-                                            },
-                                            "runAfter": {
-                                                "Parse_deleted_groups_JSON": [
-                                                    "Succeeded"
-                                                ]
-                                            },
-                                            "type": "Foreach"
-                                        },
-                                        "Parse_deleted_groups_JSON": {
-                                            "runAfter": {
-                                                "Get_deleted_groups": [
-                                                    "Succeeded"
-                                                ]
-                                            },
-                                            "type": "ParseJson",
-                                            "inputs": {
-                                                "content": "@body('Get_deleted_groups')",
-                                                "schema": {
-                                                    "properties": {
-                                                        "@@odata.context": {
-                                                            "type": "string"
-                                                        },
-                                                        "@@odata.nextLink": {
-                                                            "type": "string"
-                                                        },
-                                                        "value": {
-                                                            "items": {
-                                                                "properties": {
-                                                                    "classification": {
-                                                                    },
-                                                                    "createdDateTime": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "creationOptions": {
-                                                                        "items": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "type": "array"
-                                                                    },
-                                                                    "deletedDateTime": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "description": {
-                                                                        "type": [
-                                                                            "string",
-                                                                            "null"
-                                                                        ]
-                                                                    },
-                                                                    "displayName": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "groupTypes": {
-                                                                        "items": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "type": "array"
-                                                                    },
-                                                                    "id": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "isAssignableToRole": {
-                                                                    },
-                                                                    "mail": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "mailEnabled": {
-                                                                        "type": "boolean"
-                                                                    },
-                                                                    "mailNickname": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "onPremisesLastSyncDateTime": {
-                                                                    },
-                                                                    "onPremisesProvisioningErrors": {
-                                                                        "type": "array"
-                                                                    },
-                                                                    "onPremisesSecurityIdentifier": {
-                                                                    },
-                                                                    "onPremisesSyncEnabled": {
-                                                                    },
-                                                                    "preferredDataLocation": {
-                                                                    },
-                                                                    "proxyAddresses": {
-                                                                        "items": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "type": "array"
-                                                                    },
-                                                                    "renewedDateTime": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "resourceBehaviorOptions": {
-                                                                        "type": "array"
-                                                                    },
-                                                                    "resourceProvisioningOptions": {
-                                                                        "type": "array"
-                                                                    },
-                                                                    "securityEnabled": {
-                                                                        "type": "boolean"
-                                                                    },
-                                                                    "visibility": {
-                                                                        "type": "string"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "type": "array"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                }
-                                            }
-                                        }
-                                    },
+                                "Parse_CheckSiteExists_response": {
                                     "runAfter": {
-                                        "Set_SiteExists_variable": [
+                                        "Run_CheckSiteExists_Logic_App": [
                                             "Succeeded"
                                         ]
                                     },
-                                    "else": {
-                                        "actions": {
-                                            "Terminate_-_Site_exists": {
-                                                "runAfter": {
-                                                    "Update_status_to_creation_failed_-_Team_SP_site_exists": [
-                                                        "Succeeded"
-                                                    ]
+                                    "type": "ParseJson",
+                                    "inputs": {
+                                        "content": "@body('Run_CheckSiteExists_Logic_App')",
+                                        "schema": {
+                                            "properties": {
+                                                "exists": {
+                                                    "type": "boolean"
                                                 },
-                                                "type": "Terminate",
-                                                "inputs": {
-                                                    "runError": {
-                                                        "message": "Team already exists"
-                                                    },
-                                                    "runStatus": "Failed"
+                                                "source": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
                                                 }
                                             },
-                                            "Update_status_to_creation_failed_-_Team_SP_site_exists": {
-                                                "runAfter": {
-                                                },
-                                                "type": "ApiConnection",
-                                                "inputs": {
-                                                    "body": {
-                                                        "Status": {
-                                                            "Value": "Team Creation Failed"
-                                                        },
-                                                        "StatusReason": "Team already exists.",
-                                                        "Title": "@triggerBody()?['Title']"
-                                                    },
-                                                    "host": {
-                                                        "connection": {
-                                                            "name": "@parameters('$connections')['sharepointonline']['connectionId']"
-                                                        }
-                                                    },
-                                                    "method": "patch",
-                                                    "path": "[concat('/datasets/@{encodeURIComponent(encodeURIComponent(',variables('singlequote'),parameters('requestsSiteUrl'),variables('singlequote'),'))}/tables/@{encodeURIComponent(encodeURIComponent(',variables('singlequote'),parameters('requestsListId'),variables('singlequote'),'))}/items/@{encodeURIComponent(triggerBody()?[',variables('singlequote'),'ID',variables('singlequote'),'])}')]"
-
-                                                }
-                                            }
+                                            "type": "object"
                                         }
-                                    },
-                                    "expression": {
-                                        "and": [
-                                            {
-                                                "equals": [
-                                                    "@variables('SiteExists')",
-                                                    "@false"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    "type": "If"
+                                    }
                                 },
-                                "Create_job_to_check_if_site_exists": {
-                                    "runAfter": {
-                                    },
-                                    "type": "ApiConnection",
+                                          "Run_CheckSiteExists_Logic_App": {
+                                    "runAfter": {},
+                                    "type": "Workflow",
                                     "inputs": {
                                         "body": {
-                                            "properties": {
-                                                "parameters": {
-                                                    "SiteUrl": "@triggerBody()?['SharePointSiteURL']"
-                                                }
-                                            }
+                                            "siteUrl": "@triggerBody()?['SharePointSiteURL']",
+                                            "tenantId": "@variables('TenantID')"
                                         },
                                         "host": {
-                                            "connection": {
-                                                "name": "@parameters('$connections')['azureautomation']['connectionId']"
+                                            "triggerName": "manual",
+                                            "workflow": {
+                                                "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Logic/workflows/CheckSiteExists')]"
+
                                             }
-                                        },
-                                        "method": "put",
-                                        "path": "[concat('/subscriptions/@{encodeURIComponent(''',parameters('subscriptionId'),''')}/resourceGroups/@{encodeURIComponent(''',parameters('resourceGroupName'),''')}/providers/Microsoft.Automation/automationAccounts/@{encodeURIComponent(''',parameters('automationAccountName'),''')}/jobs')]",
-                                        "queries": {
-                                            "runbookName": "CheckSiteExists",
-                                            "wait": true,
-                                            "x-ms-api-version": "2015-10-31"
                                         }
-                                    }
-                                },
-                                "Get_site_exists_job_output": {
-                                    "runAfter": {
-                                        "Create_job_to_check_if_site_exists": [
-                                            "Succeeded"
-                                        ]
                                     },
-                                    "type": "ApiConnection",
-                                    "inputs": {
-                                        "host": {
-                                            "connection": {
-                                                "name": "@parameters('$connections')['azureautomation']['connectionId']"
-                                            }
-                                        },
-                                        "method": "get",
-                                        "path": "[concat('/subscriptions/@{encodeURIComponent(''',parameters('subscriptionId'),''')}/resourceGroups/@{encodeURIComponent(''',parameters('resourceGroupName'),''')}/providers/Microsoft.Automation/automationAccounts/@{encodeURIComponent(''',parameters('automationAccountName'),''')}/jobs/@{encodeURIComponent(body(''Create_job_to_check_if_site_exists'')?[''properties'']?[''jobId''])}/output')]",
-                                        "queries": {
-                                            "x-ms-api-version": "2015-10-31"
-                                        }
-                                    }
-                                },
-                                "Set_SiteExists_variable": {
-                                    "runAfter": {
-                                        "Get_site_exists_job_output": [
-                                            "Succeeded"
-                                        ]
-                                    },
-                                    "type": "SetVariable",
-                                    "inputs": {
-                                        "name": "SiteExists",
-                                        "value": "@bool(body('Get_site_exists_job_output'))"
-                                    }
+                                    "description": "Check if the SharePoint site backing the team exists by executing the CheckSiteExists logic app."
                                 }
                             },
                             "runAfter": {
@@ -2034,11 +1788,6 @@
                 "parameters": {
                     "$connections": {
                         "value": {
-                            "azureautomation": {
-                                "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/teamsautomate-automation')]",
-                                "connectionName": "teamsautomate-automation",
-                                "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/azureautomation')]"
-                            },
                                        "keyvault": {
                             "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/teamsautomate-kv')]",
                                 "connectionName": "keyvault",
