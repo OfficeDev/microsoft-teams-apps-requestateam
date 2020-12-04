@@ -277,7 +277,7 @@ $global:location = $null
         $uri = $uriByServiceType[$ServiceType] -replace ([regex]::Escape('{subscriptionId}')), $SubscriptionId
         $body = '"name": "{0}", "type": "{1}"' -f $Name, $typeByServiceType[$ServiceType]
  
-        $response = (Invoke-WebRequest -Uri $uri -Method Post -Body "{$body}" -ContentType "application/json" -Headers @{Authorization = $AuthorizationToken }).content
+        $response = (Invoke-WebRequest -Uri $uri -Method Post -Body "{$body}" -ContentType "application/json" -UseBasicParsing -Headers @{Authorization = $AuthorizationToken }).content
         $response | ConvertFrom-Json |
         Select-Object @{N = 'Name'; E = { $Name } }, @{N = 'Type'; E = { $ServiceType } }, @{N = 'Available'; E = { $_ | Select-Object -ExpandProperty *available } }, Reason, Message
     }
@@ -412,12 +412,10 @@ function ConfigureSharePointSite {
                 $listItemCreationInformation = New-Object Microsoft.SharePoint.Client.ListItemCreationInformation
                 $newItem = $teamsTemplatesList.AddItem($listItemCreationInformation)
                 $newItem["Title"] = $template.Title
-                $newItem["BaseTemplateType"] = $template.BaseTemplateType
-                $newItem["BaseTemplateId"] = $template.BaseTemplateId
+                $newItem["TemplateId"] = $template.TemplateId
                 $newItem["TeamId"] = $template.TeamId
                 $newItem["Description"] = $template.Description
-                $newItem["FirstPartyTemplate"] = $template.FirstPartyTemplate
-                $newItem["TeamVisibility"] = $template.TeamVisibility
+                $newItem["AdminCenterTemplate"] = $template.AdminCenterTemplate
                 $newitem.Update()
                 $context.ExecuteQuery()
             }
