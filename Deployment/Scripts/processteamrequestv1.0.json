@@ -798,7 +798,7 @@
                                                 "actions": {
                                         "Parse_teamify_JSON": {
                                             "runAfter": {
-                                                "Teamify_group": [
+                                                "Wait_for_group_to_teamify": [
                                                     "Succeeded"
                                                 ]
                                             },
@@ -930,6 +930,20 @@
                                                 "method": "PUT",
                                                 "uri": "@{variables('GraphURL')}/groups/@{body('Parse_group_JSON')?['id']}/team"
                                             }
+                                            },
+                                                    "Wait_for_group_to_teamify": {
+                                                        "runAfter": {
+                                                            "Teamify_group": [
+                                                                "Succeeded"
+                                                            ]
+                                                        },
+                                                        "type": "Wait",
+                                                        "inputs": {
+                                                            "interval": {
+                                                                "count": 2,
+                                                                "unit": "Minute"
+                                                            }
+                                                        }
                                                 }
                                                 }
                                         },
