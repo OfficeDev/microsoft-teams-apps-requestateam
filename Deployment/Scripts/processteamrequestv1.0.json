@@ -304,7 +304,7 @@
                                                     "type": "SetVariable",
                                                     "inputs": {
                                                         "name": "MembersRequestBody",
-                                                        "value": "{\n  \"displayName\": \"@{triggerBody()?['Title']}\",\n\"description\":\"@{triggerBody()?['TeamDescription']}\",\n  \"groupTypes\": [\n    \"Unified\"\n  ],\n  \"mailEnabled\": true,\n  \"mailNickname\": \"@{triggerBody()?['TeamAlias']}\",\n  \"members@odata.bind\": @{variables('Members')},\n  \"owners@odata.bind\": @{variables('Owners')},\n  \"securityEnabled\": false,\n\"visibility\":\"@{triggerBody()?['Visibility']?['Value']}\",\n\"classification\": @{if(empty(triggerBody()?['Classification']),'null',concat('\"',triggerBody()?['Classification'],'\"'))}\n}"
+                                                        "value": "{\n  \"displayName\": \"@{triggerBody()?['Title']}\",\n\"description\":\"@{triggerBody()?['TeamDescription']}\",\n  \"groupTypes\": [\n    \"Unified\"\n  ],\n  \"mailEnabled\": true,\n  \"mailNickname\": \"@{triggerBody()?['TeamAlias']}\",\n  \"members@odata.bind\": @{variables('Members')},\n  \"owners@odata.bind\": @{variables('Owners')},\n  \"securityEnabled\": false,\n\"visibility\":\"@{triggerBody()?['Visibility']?['Value']}\",\n\"classification\": @{if(empty(triggerBody()?['Classification']),'null',concat('\"',triggerBody()?['Classification'],'\"'))},\n \"resourceBehaviorOptions\": [\n        \"WelcomeEmailDisabled\"\n    ]\n}"
                                                     }
                                                 }                           
                                                                 },
@@ -316,7 +316,7 @@
                                                         "type": "SetVariable",
                                                         "inputs": {
                                                             "name": "MembersRequestBody",
-                                                            "value": "{\n  \"displayName\": \"@{triggerBody()?['Title']}\",\n\"description\":\"@{triggerBody()?['TeamDescription']}\",\n  \"groupTypes\": [\n    \"Unified\"\n  ],\n  \"mailEnabled\": true,\n  \"mailNickname\": \"@{triggerBody()?['TeamAlias']}\",\n  \"owners@odata.bind\": @{variables('Owners')},\n  \"securityEnabled\": false,\n\"visibility\":\"@{triggerBody()?['Visibility']?['Value']}\",\n\"classification\": @{if(empty(triggerBody()?['Classification']),'null',concat('\\\"',triggerBody()?['Classification'],'\\\"'))}\n}"
+                                                            "value": "{\n  \"displayName\": \"@{triggerBody()?['Title']}\",\n\"description\":\"@{triggerBody()?['TeamDescription']}\",\n  \"groupTypes\": [\n    \"Unified\"\n  ],\n  \"mailEnabled\": true,\n  \"mailNickname\": \"@{triggerBody()?['TeamAlias']}\",\n  \"owners@odata.bind\": @{variables('Owners')},\n  \"securityEnabled\": false,\n\"visibility\":\"@{triggerBody()?['Visibility']?['Value']}\",\n\"classification\": @{if(empty(triggerBody()?['Classification']),'null',concat('\\\"',triggerBody()?['Classification'],'\\\"'))},\n \"resourceBehaviorOptions\": [\n        \"WelcomeEmailDisabled\"\n    ]\n}"
                                                                         }
                                                                     }
                                                                 }
