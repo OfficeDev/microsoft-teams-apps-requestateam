@@ -198,7 +198,7 @@ If (-not (Test-Path -Path "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2")) {
 
 # Install required modules
 Install-Module microsoft.online.sharepoint.powershell -Scope CurrentUser
-Install-Module SharePointPnPPowerShellOnline -Scope CurrentUser -MaximumVersion 3.23.2007.1 -Force
+Install-Module PnP.PowerShell -Scope CurrentUser
 Install-Module ImportExcel -Scope CurrentUser
 Install-Module Az -AllowClobber -Scope CurrentUser
 Install-Module AzureADPreview -Scope CurrentUser
@@ -245,81 +245,81 @@ $global:appServicePrincipalId = $null
 $global:siteClassifications = $null
 $global:location = $null
 
-    # Test for availability of Azure resources
-    function Test-AzNameAvailability {
-        param(
-            [Parameter(Mandatory = $true)] [string] $AuthorizationToken,
-            [Parameter(Mandatory = $true)] [string] $SubscriptionId,
-            [Parameter(Mandatory = $true)] [string] $Name,
-            [Parameter(Mandatory = $true)] [ValidateSet(
-                'ApiManagement', 'KeyVault', 'ManagementGroup', 'Sql', 'StorageAccount', 'WebApp')]
-            $ServiceType
-        )
+# Test for availability of Azure resources
+function Test-AzNameAvailability {
+    param(
+        [Parameter(Mandatory = $true)] [string] $AuthorizationToken,
+        [Parameter(Mandatory = $true)] [string] $SubscriptionId,
+        [Parameter(Mandatory = $true)] [string] $Name,
+        [Parameter(Mandatory = $true)] [ValidateSet(
+            'ApiManagement', 'KeyVault', 'ManagementGroup', 'Sql', 'StorageAccount', 'WebApp')]
+        $ServiceType
+    )
  
-        $uriByServiceType = @{
-            ApiManagement   = 'https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/checkNameAvailability?api-version=2019-01-01'
-            KeyVault        = 'https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/checkNameAvailability?api-version=2019-09-01'
-            ManagementGroup = 'https://management.azure.com/providers/Microsoft.Management/checkNameAvailability?api-version=2018-03-01-preview'
-            Sql             = 'https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Sql/checkNameAvailability?api-version=2018-06-01-preview'
-            StorageAccount  = 'https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Storage/checkNameAvailability?api-version=2019-06-01'
-            WebApp          = 'https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Web/checkNameAvailability?api-version=2019-08-01'
-        }
- 
-        $typeByServiceType = @{
-            ApiManagement   = 'Microsoft.ApiManagement/service'
-            KeyVault        = 'Microsoft.KeyVault/vaults'
-            ManagementGroup = '/providers/Microsoft.Management/managementGroups'
-            Sql             = 'Microsoft.Sql/servers'
-            StorageAccount  = 'Microsoft.Storage/storageAccounts'
-            WebApp          = 'Microsoft.Web/sites'
-        }
- 
-        $uri = $uriByServiceType[$ServiceType] -replace ([regex]::Escape('{subscriptionId}')), $SubscriptionId
-        $body = '"name": "{0}", "type": "{1}"' -f $Name, $typeByServiceType[$ServiceType]
- 
-        $response = (Invoke-WebRequest -Uri $uri -Method Post -Body "{$body}" -ContentType "application/json" -UseBasicParsing -Headers @{Authorization = $AuthorizationToken }).content
-        $response | ConvertFrom-Json |
-        Select-Object @{N = 'Name'; E = { $Name } }, @{N = 'Type'; E = { $ServiceType } }, @{N = 'Available'; E = { $_ | Select-Object -ExpandProperty *available } }, Reason, Message
+    $uriByServiceType = @{
+        ApiManagement   = 'https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/checkNameAvailability?api-version=2019-01-01'
+        KeyVault        = 'https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/checkNameAvailability?api-version=2019-09-01'
+        ManagementGroup = 'https://management.azure.com/providers/Microsoft.Management/checkNameAvailability?api-version=2018-03-01-preview'
+        Sql             = 'https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Sql/checkNameAvailability?api-version=2018-06-01-preview'
+        StorageAccount  = 'https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Storage/checkNameAvailability?api-version=2019-06-01'
+        WebApp          = 'https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Web/checkNameAvailability?api-version=2019-08-01'
     }
+ 
+    $typeByServiceType = @{
+        ApiManagement   = 'Microsoft.ApiManagement/service'
+        KeyVault        = 'Microsoft.KeyVault/vaults'
+        ManagementGroup = '/providers/Microsoft.Management/managementGroups'
+        Sql             = 'Microsoft.Sql/servers'
+        StorageAccount  = 'Microsoft.Storage/storageAccounts'
+        WebApp          = 'Microsoft.Web/sites'
+    }
+ 
+    $uri = $uriByServiceType[$ServiceType] -replace ([regex]::Escape('{subscriptionId}')), $SubscriptionId
+    $body = '"name": "{0}", "type": "{1}"' -f $Name, $typeByServiceType[$ServiceType]
+ 
+    $response = (Invoke-WebRequest -Uri $uri -Method Post -Body "{$body}" -ContentType "application/json" -UseBasicParsing -Headers @{Authorization = $AuthorizationToken }).content
+    $response | ConvertFrom-Json |
+    Select-Object @{N = 'Name'; E = { $Name } }, @{N = 'Type'; E = { $ServiceType } }, @{N = 'Available'; E = { $_ | Select-Object -ExpandProperty *available } }, Reason, Message
+}
 
-    # Get Azure access token for current user
-    function Get-AccessTokenFromCurrentUser {
-        $azContext = Get-AzContext
-        $azProfile = [Microsoft.Azure.Commands.Common.Authentication.Abstractions.AzureRmProfileProvider]::Instance.Profile
-        $profileClient = New-Object -TypeName Microsoft.Azure.Commands.ResourceManager.Common.RMProfileClient -ArgumentList $azProfile
-        $token = $profileClient.AcquireAccessToken($azContext.Subscription.TenantId)
-        ('Bearer ' + $token.AccessToken)
-    }        
+# Get Azure access token for current user
+function Get-AccessTokenFromCurrentUser {
+    $azContext = Get-AzContext
+    $azProfile = [Microsoft.Azure.Commands.Common.Authentication.Abstractions.AzureRmProfileProvider]::Instance.Profile
+    $profileClient = New-Object -TypeName Microsoft.Azure.Commands.ResourceManager.Common.RMProfileClient -ArgumentList $azProfile
+    $token = $profileClient.AcquireAccessToken($azContext.Subscription.TenantId)
+    ('Bearer ' + $token.AccessToken)
+}        
 
 # Create site and apply provisioning template
 function CreateRequestsSharePointSite {
-     try {
+    try {
 
         Write-Host "### TEAMS REQUESTS SITE CREATION ###`nCreating Teams Requests SharePoint site..." -ForegroundColor Yellow
 
-    $site = Get-PnPTenantSite -Url $requestsSiteUrl -ErrorAction SilentlyContinue
+        $site = Get-PnPTenantSite -Url $requestsSiteUrl -ErrorAction SilentlyContinue
 
-    if (!$site) {
+        if (!$site) {
 
-        # Site will be created with current user connected to PnP as the owner/primary admin
-        New-PnPSite -Type TeamSite -Title $RequestsSiteName -Alias $requestsSiteAlias -Description $RequestsSiteDesc
+            # Site will be created with current user connected to PnP as the owner/primary admin
+            New-PnPSite -Type TeamSite -Title $RequestsSiteName -Alias $requestsSiteAlias -Description $RequestsSiteDesc
 
-        Write-Host "Site created`n**TEAMS REQUESTS SITE CREATION COMPLETE**" -ForegroundColor Green
-    }         
+            Write-Host "Site created`n**TEAMS REQUESTS SITE CREATION COMPLETE**" -ForegroundColor Green
+        }         
 
-    else {
-        Write-Host "Site already exists! Do you wish to overwrite?" -ForegroundColor Red
-        $overwrite = Read-Host " ( y (overwrite) / n (exit) )"
-        if ($overwrite -ne "y") {
-            break
-        }
+        else {
+            Write-Host "Site already exists! Do you wish to overwrite?" -ForegroundColor Red
+            $overwrite = Read-Host " ( y (overwrite) / n (exit) )"
+            if ($overwrite -ne "y") {
+                break
+            }
             
+        }
     }
-}
-catch {
-    $errorMessage = $_.Exception.Message
-    Write-Host "Error occured while creating of the SharePoint site: $errorMessage" -ForegroundColor Red
-}
+    catch {
+        $errorMessage = $_.Exception.Message
+        Write-Host "Error occured while creating of the SharePoint site: $errorMessage" -ForegroundColor Red
+    }
 }
 
 # Configure the new site
@@ -331,7 +331,7 @@ function ConfigureSharePointSite {
 
         Write-Host "Applying provisioning template..." -ForegroundColor Yellow
 
-        Apply-PnPProvisioningTemplate -Path (Join-Path $packageRootPath $templatePath) -ClearNavigation
+        Invoke-PnPSiteTemplate -Path (Join-Path $packageRootPath $templatePath) -ClearNavigation
 
         Write-Host "Applied template" -ForegroundColor Green
 
@@ -432,7 +432,7 @@ function ConfigureSharePointSite {
             $group = Get-PnPGroup | Where-Object Title -Match "Owners"
             
             # Add service account to owners group
-            Add-PnPUserToGroup -LoginName $ServiceAccountUPN -Identity $group
+            Add-PnPGroupMember -LoginName $ServiceAccountUPN -Identity $group
         }
 
         Write-Host "Finished configuring site" -ForegroundColor Green
@@ -529,10 +529,9 @@ function CreateConfigureKeyVault {
     # Check if the key vault already exists
     $keyVault = Get-AzKeyVault -Name $KeyVaultName
 
-    if($null -eq $keyVault)
-    {
-    # Use the tenant name in the key vault name to ensure it is unique - first 8 characters only due to maximum allowed length of key vault names
-    $keyVault = New-AzKeyVault -Name $KeyVaultName -ResourceGroupName $ResourceGroupName -Location $Location
+    if ($null -eq $keyVault) {
+        # Use the tenant name in the key vault name to ensure it is unique - first 8 characters only due to maximum allowed length of key vault names
+        $keyVault = New-AzKeyVault -Name $KeyVaultName -ResourceGroupName $ResourceGroupName -Location $Location
     }
 
     # Create/update the secrets for the ad app id and password
@@ -679,29 +678,27 @@ function ValidateKeyVault {
 
     if ($availabilityResult.Reason -eq "AlreadyExists") {
 
-         #Check if the key vault exists in this subscription
-    $keyVault = Get-AzKeyVault -Name $KeyVaultName
+        #Check if the key vault exists in this subscription
+        $keyVault = Get-AzKeyVault -Name $KeyVaultName
 
-    if($null -ne $keyVault)
-    {
-        Write-Host "Key Vault already exists in this Azure subscription. Do you wish to use it?" -ForegroundColor Red
-        $update = Read-Host " ( y (yes) / n (exit) ) "
-        if ($update -ne "y")
-        {
-            Write-Host "Script terminated. Please specify a different Key Vault name or choose to use the existing Key Vault when re-executing the script." -ForegroundColor Red
-            break
+        if ($null -ne $keyVault) {
+            Write-Host "Key Vault already exists in this Azure subscription. Do you wish to use it?" -ForegroundColor Red
+            $update = Read-Host " ( y (yes) / n (exit) ) "
+            if ($update -ne "y") {
+                Write-Host "Script terminated. Please specify a different Key Vault name or choose to use the existing Key Vault when re-executing the script." -ForegroundColor Red
+                break
+            }
+            else {
+                Write-Host "Existing Key Vault '$KeyVaultName' will be used." -ForegroundColor Yellow
+            
+            }   
         }
         else {
-            Write-Host "Existing Key Vault '$KeyVaultName' will be used." -ForegroundColor Yellow
-            
-        }   
+            throw "Key Vault already exists in another Azure subscription. Please specify a different name."
+        }
     }
-    else {
-        throw "Key Vault already exists in another Azure subscription. Please specify a different name."
-    }
-}
 
-if ($availabilityResult.reason -eq "Invalid") {
+    if ($availabilityResult.reason -eq "Invalid") {
     
         throw $availabilityResult.message
     } 
