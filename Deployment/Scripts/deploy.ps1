@@ -198,7 +198,7 @@ If (-not (Test-Path -Path "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2")) {
 
 # Install required modules
 Install-Module microsoft.online.sharepoint.powershell -Scope CurrentUser
-Install-Module PnP.PowerShell -Scope CurrentUser
+Install-Module PnP.PowerShell -AllowPrerelease -MinimumVersion 1.3.13-nightly -MaximumVersion 1.3.13-nightly -Force
 Install-Module ImportExcel -Scope CurrentUser
 Install-Module Az -AllowClobber -Scope CurrentUser
 Install-Module AzureADPreview -Scope CurrentUser
