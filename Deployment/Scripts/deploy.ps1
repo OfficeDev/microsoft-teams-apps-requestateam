@@ -198,7 +198,7 @@ If (-not (Test-Path -Path "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2")) {
 
 # Install required modules
 Install-Module microsoft.online.sharepoint.powershell -Scope CurrentUser
-Install-Module PnP.PowerShell -AllowPrerelease -MinimumVersion 1.3.13-nightly -MaximumVersion 1.3.13-nightly -Force
+Install-Module PnP.PowerShell -AllowPrerelease -MinimumVersion "1.3.13-nightly" -MaximumVersion "1.3.13-nightly" -Force
 Install-Module ImportExcel -Scope CurrentUser
 Install-Module Az -AllowClobber -Scope CurrentUser
 Install-Module AzureADPreview -Scope CurrentUser
@@ -734,14 +734,14 @@ $cliLogin = az login
 Write-Host "Connected to Azure" -ForegroundColor Green
 # Connect to PnP
 Write-Host "Launching PnP sign-in..." -ForegroundColor Yellow
-$pnpConnect = Connect-PnPOnline -Url $tenantAdminUrl -UseWebLogin
+$pnpConnect = Connect-PnPOnline -Url $tenantAdminUrl -Interactive
 Write-Host "Connected to SPO" -ForegroundColor Green
 
 CreateAzureADApp
 GetSiteClassifications
 CreateRequestsSharePointSite
 # Connect to the new site
-$pnpConnect = Connect-PnPOnline $requestsSiteUrl -UseWebLogin
+$pnpConnect = Connect-PnPOnline $requestsSiteUrl -Interactive
 ConfigureSharePointSite
 
 Write-Host "### AZURE RESOURCES DEPLOYMENT ###`nStarting Azure resources deployment..." -ForegroundColor Yellow
