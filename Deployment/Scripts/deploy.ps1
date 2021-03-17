@@ -195,19 +195,13 @@ If (-not (Test-Path -Path "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2")) {
     Write-Host "AZURE CLI NOT INSTALLED!`nPLEASE INSTALL THE CLI FROM https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest and re-run this script in a new PowerShell session" -ForegroundColor Red
     break
 }
-
-# Install required modules
-Install-Module microsoft.online.sharepoint.powershell -Scope CurrentUser
-Install-Module PnP.PowerShell -RequiredVersion 1.4.0
-Install-Module ImportExcel -Scope CurrentUser
-Install-Module Az -AllowClobber -Scope CurrentUser
-Install-Module AzureADPreview -Scope CurrentUser
-Install-Module WriteAscii -Scope CurrentUser
-
 # Variables
 $packageRootPath = "..\"
 $templatePath = "Templates\teamsautomate-sitetemplate.xml"
 $settingsPath = "Scripts\Settings\SharePoint List items.xlsx"
+
+# Required PS modules
+$preReqModules = "Microsoft.Online.SharePoint.PowerShell", "PnP.PowerShell", "Az", "AzureADPreview", "ImportExcel", "WriteAscii"
 
 #  Worksheet
 $siteRequestSettingsWorksheetName = "Request Settings"
@@ -244,6 +238,43 @@ $global:appSecret = $null
 $global:appServicePrincipalId = $null
 $global:siteClassifications = $null
 $global:location = $null
+
+# Installs the required PowerShell modules
+function InstallModules ($modules) {
+    if ((Get-PSRepository).InstallationPolicy -eq "Untrusted") {
+        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+        $psTrustDisabled = $true
+    }
+
+    foreach ($module in $modules) {
+        $instModule = Get-InstalledModule -Name $module -ErrorAction:SilentlyContinue
+        if (!$instModule) {
+            if ($module -eq "PnP.PowerShell") {
+                $spModule = Get-InstalledModule -Name "SharePointPnPPowerShellOnline" -ErrorAction:SilentlyContinue
+                if ($spModule) {
+                    throw('Please remove the older "SharePointPnPPowerShellOnline" module before the deployment can install the new cross-platform module "PnP.PowerShell"')                    
+                }
+                try {
+                    Write-Host('Installing requried PowerShell Module {0}' -f $module) -ForegroundColor Yellow
+                    Install-Module -Name $module -Scope CurrentUser -RequiredVersion "1.4.0"
+                } catch {
+                    throw('Failed to install PowerShell module {0}: {1}' -f $module, $_.Exception.Message)
+                } 
+            } else {
+                try {
+                    Write-Host('Install requried PowerShell Module {0}' -f $module) -ForegroundColor Yellow
+                    Install-Module -Name $module -Scope CurrentUser -Confirm:$false
+                } catch {
+                    throw('Failed to install PowerShell module {0}: {1}' -f $module, $_.Exception.Message)
+                } 
+            }
+        }
+    }
+
+    if ($psTrustDisabled) {
+        Set-PSRepository -Name PSGallery -InstallationPolicy Untrusted
+    }
+}
 
 # Test for availability of Azure resources
 function Test-AzNameAvailability {
@@ -707,18 +738,24 @@ function ValidateKeyVault {
 
 Write-Ascii -InputObject "Request-a-Team" -ForegroundColor Magenta
 
-Write-Host "### DEPLOYMENT SCRIPT STARTED ###" -ForegroundColor Magenta
+Write-Host "###  DEPLOYMENT SCRIPT STARTED `n(c) Microsoft Corporation ###" -ForegroundColor Magenta
 
-#Write-Host "Enter desired App Password (Secret) for Azure AD App (at least 16 characters long, containing 1 special character and numeric character)" -ForegroundColor Yellow
+# Install required PS Modules
+Write-Host "Installing required PowerShell Modules..." -ForegroundColor Yellow
+InstallModules -Modules $preReqModules
+foreach ($module in $preReqModules) {
+    $instModule = Get-InstalledModule -Name $module -ErrorAction:SilentlyContinue
+    if (!$instModule)  {
+        throw('Failed to install module {0}' -f $module)
+    }
+}
+
+Write-Host "Installed modules" -ForegroundColor Green
 
 # Generate base64 secret for the app
 $guid = New-Guid
 
 $global:appSecret = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($guid))))
-
-#global:appSecret = Read-Host -AsSecureString
-
-#$global:appSecret = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($global:appSecret))
 
 $global:encodedAppSecret = [System.Web.HttpUtility]::UrlEncode($global:appSecret) 
 
