@@ -736,8 +736,6 @@ function ValidateKeyVault {
 
 }
 
-Write-Ascii -InputObject "Request-a-Team" -ForegroundColor Magenta
-
 Write-Host "###  DEPLOYMENT SCRIPT STARTED `n(c) Microsoft Corporation ###" -ForegroundColor Magenta
 
 # Install required PS Modules
@@ -751,6 +749,8 @@ foreach ($module in $preReqModules) {
 }
 
 Write-Host "Installed modules" -ForegroundColor Green
+
+Write-Ascii -InputObject "Request-a-Team" -ForegroundColor Magenta
 
 # Generate base64 secret for the app
 $guid = New-Guid
