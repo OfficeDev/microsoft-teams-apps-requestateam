@@ -45,9 +45,6 @@
 .PARAMETER ServiceAccountUPN
     UPN of Service Account to be used for the solution - used in the Logic App connections to connect to SharePoint, Outlook and Microsoft Teams.
 
-.PARAMETER UseMSGraphBeta
-    Deploys a version of the provisioning logic app which uses solely the beta endpoint for the Microsoft Graph (provides the ability to create private channels when cloning teams and creating teams from your own defined templates). Otherwise the 1.0 endpoint will be used.
-
 .PARAMETER IsEdu
     Specifies whether the current tenant is an Education tenant. If set to true, the Education Teams Templates will be deployed. These will be skipped if set to false or left blank.
 
@@ -57,7 +54,7 @@
 
 .EXAMPLE
     deploy.ps1 -TenantName "contoso" -RequestsSiteName "Teams Request" -RequestsSiteDesc "Site to Microsoft Teams requests" 
-    -ManagedPath "sites" -SubscriptionId "acb9bcbb-1f4b-44b9-960c-7ddaf4ad21d2" -Location "uksouth" -ResourceGroupName "teamsautomate-rg" -AppName "TeamsAutomate" -ServiceAccountUPN provisioning@contoso.com -UseMSGraphBeta $false -IsEdu $false -KeyValueName "teamsautomate-kv"
+    -ManagedPath "sites" -SubscriptionId "acb9bcbb-1f4b-44b9-960c-7ddaf4ad21d2" -Location "uksouth" -ResourceGroupName "teamsautomate-rg" -AppName "TeamsAutomate" -ServiceAccountUPN provisioning@contoso.com -IsEdu $false -KeyValueName "teamsautomate-kv"
 
 -----------------------------------------------------------------------------------------------------------------------------------
 Script name : deploy.ps1
@@ -171,11 +168,6 @@ Param(
         ValueFromPipeline = $true)]
     [String]
     $ServiceAccountUPN,
-
-    [Parameter(Mandatory = $false,
-        ValueFromPipeline = $true)]
-    [Bool]
-    $UseMSGraphBeta = $false,
 
     [Parameter(Mandatory = $false,
         ValueFromPipeline = $true)]
@@ -586,14 +578,7 @@ function DeployARMTemplate {
 
         az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'checksiteexists.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "spoTenantName=$tenantName.sharepoint.com" "location=$location"
   
-
-        if ($UseMSGraphBeta) {
-            Write-Host "Microsoft Graph beta endpoint will be used"
-            az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'processteamrequestbeta.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "requestsSiteUrl=$requestsSiteUrl" "requestsListId=$global:requestsListId" "location=$global:location" "serviceAccountUPN=$ServiceAccountUPN"
-        }
-        else {
-            az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'processteamrequestv1.0.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "requestsSiteUrl=$requestsSiteUrl" "requestsListId=$global:requestsListId" "templatesListId=$global:teamsTemplatesListId" "location=$global:location" "serviceAccountUPN=$ServiceAccountUPN"
-        }
+        az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'processteamrequest.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "requestsSiteUrl=$requestsSiteUrl" "requestsListId=$global:requestsListId" "templatesListId=$global:teamsTemplatesListId" "location=$global:location" "serviceAccountUPN=$ServiceAccountUPN"
 
         Write-Host "Finished deploying logic apps" -ForegroundColor Green
     }
