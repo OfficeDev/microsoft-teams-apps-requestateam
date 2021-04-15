@@ -255,14 +255,14 @@ function InstallModules ($modules) {
                     throw('Please remove the older "SharePointPnPPowerShellOnline" module before the deployment can install the new cross-platform module "PnP.PowerShell"')                    
                 }
                 try {
-                    Write-Host('Installing requried PowerShell Module {0}' -f $module) -ForegroundColor Yellow
+                    Write-Host('Installing required PowerShell Module {0}' -f $module) -ForegroundColor Yellow
                     Install-Module -Name $module -Scope CurrentUser -RequiredVersion "1.4.0"
                 } catch {
                     throw('Failed to install PowerShell module {0}: {1}' -f $module, $_.Exception.Message)
                 } 
             } else {
                 try {
-                    Write-Host('Install requried PowerShell Module {0}' -f $module) -ForegroundColor Yellow
+                    Write-Host('Install required PowerShell Module {0}' -f $module) -ForegroundColor Yellow
                     Install-Module -Name $module -Scope CurrentUser -Confirm:$false
                 } catch {
                     throw('Failed to install PowerShell module {0}: {1}' -f $module, $_.Exception.Message)
