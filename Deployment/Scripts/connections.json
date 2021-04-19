@@ -32,10 +32,10 @@
             "comments": "Provision the API connections before the logic apps.",
             "type": "Microsoft.Web/connections",
             "apiVersion": "2016-06-01",
-            "name": "teamsautomate-spo",
+            "name": "requestateam-spo",
             "location": "[parameters('location')]",
             "properties": {
-                "displayName": "Teams Automate - SharePoint Online",
+                "displayName": "Request a team - SharePoint Online",
                 "customParameterValues": {
                 },
                 "api": {
@@ -46,10 +46,10 @@
         {
             "type": "Microsoft.Web/connections",
             "apiVersion": "2016-06-01",
-            "name": "teamsautomate-o365outlook",
+            "name": "requestateam-o365outlook",
             "location": "[parameters('location')]",
             "properties": {
-                "displayName": "Teams Automate - Office 365 Outlook",
+                "displayName": "Request a team - Office 365 Outlook",
                 "customParameterValues": {
                 },
                 "api": {
@@ -60,10 +60,10 @@
         {
             "type": "Microsoft.Web/connections",
             "apiVersion": "2016-06-01",
-            "name": "teamsautomate-o365users",
+            "name": "requestateam-o365users",
             "location": "[parameters('location')]",
             "properties": {
-                "displayName": "Teams Automate - Office 365 Users",
+                "displayName": "Request a team - Office 365 Users",
                 "customParameterValues": {
                 },
                 "api": {
@@ -74,10 +74,10 @@
         {
             "type": "Microsoft.Web/connections",
             "apiVersion": "2016-06-01",
-            "name": "teamsautomate-teams",
+            "name": "requestateam-teams",
             "location": "[parameters('location')]",
             "properties": {
-                "displayName": "Teams Automate - Microsoft Teams",
+                "displayName": "Request a team - Microsoft Teams",
                 "customParameterValues": {
                 },
                 "api": {
@@ -88,10 +88,10 @@
          {
             "type": "Microsoft.Web/connections",
             "apiVersion": "2016-06-01",
-            "name": "teamsautomate-kv",
+            "name": "requestateam-kv",
             "location": "[parameters('location')]",
             "properties": {
-                "displayName": "Teams Automate - Key Vault",
+                "displayName": "Request a team - Key Vault",
                 "parameterValues": {
                     "vaultName": "[parameters('keyvaultName')]",
                     "token:clientId": "[parameters('appId')]",

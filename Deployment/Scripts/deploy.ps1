@@ -54,7 +54,7 @@
 
 .EXAMPLE
     deploy.ps1 -TenantName "contoso" -RequestsSiteName "Teams Request" -RequestsSiteDesc "Site to Microsoft Teams requests" 
-    -ManagedPath "sites" -SubscriptionId "acb9bcbb-1f4b-44b9-960c-7ddaf4ad21d2" -Location "uksouth" -ResourceGroupName "teamsautomate-rg" -AppName "TeamsAutomate" -ServiceAccountUPN provisioning@contoso.com -IsEdu $false -KeyValueName "teamsautomate-kv"
+    -ManagedPath "sites" -SubscriptionId "acb9bcbb-1f4b-44b9-960c-7ddaf4ad21d2" -Location "uksouth" -ResourceGroupName "requestateam-rg" -AppName "RequestATeam" -ServiceAccountUPN provisioning@contoso.com -IsEdu $false -KeyValueName "requestateam-kv"
 
 -----------------------------------------------------------------------------------------------------------------------------------
 Script name : deploy.ps1
@@ -189,7 +189,7 @@ If (-not (Test-Path -Path "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2")) {
 }
 # Variables
 $packageRootPath = "..\"
-$templatePath = "Templates\teamsautomate-sitetemplate.xml"
+$templatePath = "Templates\requestateam-sitetemplate.xml"
 $settingsPath = "Scripts\Settings\SharePoint List items.xlsx"
 
 # Required PS modules
@@ -216,10 +216,10 @@ $requestsSiteAlias = $RequestsSiteName -replace (' ', '')
 $requestsSiteUrl = "https://$tenantName.sharepoint.com/$ManagedPath/$requestsSiteAlias"
 
 # API connection names
-$spoConnectionName = "teamsautomate-spo"
-$o365OutlookConnectionName = "teamsautomate-o365outlook"
-$o365UsersConnectionName = "teamsautomate-o365users"
-$teamsConnectionName = "teamsautomate-teams"
+$spoConnectionName = "requestateam-spo"
+$o365OutlookConnectionName = "requestateam-o365outlook"
+$o365UsersConnectionName = "requestateam-o365users"
+$teamsConnectionName = "requestateam-teams"
 
 # Global variables
 $global:context = $null
@@ -230,6 +230,7 @@ $global:appSecret = $null
 $global:appServicePrincipalId = $null
 $global:siteClassifications = $null
 $global:location = $null
+$global:requestSettingsListId = $null
 
 # Installs the required PowerShell modules
 function InstallModules ($modules) {
@@ -379,6 +380,7 @@ function ConfigureSharePointSite {
 
         # Adding settings in Site request Settings list
         $siteRequestsSettingsList = Get-PnPList $requestSettingsListName
+        $global:requestSettingsListId = $siteRequestsSettingsList.Id
         $context.Load($siteRequestsSettingsList)
         $context.ExecuteQuery()
 
@@ -578,7 +580,7 @@ function DeployARMTemplate {
 
         az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'checksiteexists.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "spoTenantName=$tenantName.sharepoint.com" "location=$location"
   
-        az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'processteamrequest.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "requestsSiteUrl=$requestsSiteUrl" "requestsListId=$global:requestsListId" "templatesListId=$global:teamsTemplatesListId" "location=$global:location" "serviceAccountUPN=$ServiceAccountUPN"
+        az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'processteamrequest.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "tenantId=$TenantId" "requestsSiteUrl=$requestsSiteUrl" "requestsListId=$global:requestsListId" "requestSettingsListsId=$global:requestSettingsListId" "location=$global:location" "serviceAccountUPN=$ServiceAccountUPN"
 
         Write-Host "Finished deploying logic apps" -ForegroundColor Green
     }
