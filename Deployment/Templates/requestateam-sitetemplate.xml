@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2020/02/ProvisioningSchema">
   <pnp:Preferences Generator="PnP.Framework, Version=1.3.0.0, Culture=neutral, PublicKeyToken=null" />
-  <pnp:Templates ID="CONTAINER-TEMPLATE-69B823A9C35E4B31A6282A368A090BF7">
-    <pnp:ProvisioningTemplate ID="TEMPLATE-69B823A9C35E4B31A6282A368A090BF7" Version="1" BaseSiteTemplate="GROUP#0" Scope="RootSite">
+  <pnp:Templates ID="CONTAINER-TEMPLATE-882FCF305980499B9D2D091EE6C90C83">
+    <pnp:ProvisioningTemplate ID="TEMPLATE-882FCF305980499B9D2D091EE6C90C83" Version="1" BaseSiteTemplate="GROUP#0" Scope="RootSite">
       <pnp:WebSettings RequestAccessEmail="" NoCrawl="false" WelcomePage="SitePages/Home.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="true" MembersCanShare="true" SearchScope="DefaultScope" SearchBoxInNavBar="Inherit" />
       <pnp:SiteSettings AllowDesigner="true" SearchBoxInNavBar="Inherit" SearchCenterUrl="" />
       <pnp:RegionalSettings AdjustHijriDays="0" AlternateCalendarType="None" CalendarType="Gregorian" Collation="25" FirstDayOfWeek="Monday" FirstWeekOfYear="2" LocaleId="2057" ShowWeeks="false" Time24="true" TimeZone="2" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="8:00AM" />
@@ -176,22 +176,25 @@
                 <FieldRef Name="Description" />
                 <FieldRef Name="Value" />
                 <FieldRef Name="BlockedWordsValue" />
-                <FieldRef Name="PrefixAttribute" />
-                <FieldRef Name="SuffixAttribute" />
                 <FieldRef Name="PrefixText" />
-                <FieldRef Name="SuffixText" />
+                <FieldRef Name="PrefixAttribute" />
                 <FieldRef Name="PrefixUseAttribute" />
+                <FieldRef Name="SuffixText" />
+                <FieldRef Name="SuffixAttribute" />
                 <FieldRef Name="SuffixUseAttribute" />
               </ViewFields>
               <RowLimit Paged="TRUE">30</RowLimit>
+              <Aggregations Value="Off" />
               <JSLink>clienttemplates.js</JSLink>
               <CustomFormatter />
+              <ViewData />
             </View>
           </pnp:Views>
           <pnp:Fields>
             <Field Type="Note" DisplayName="Description" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" NumLines="6" RichText="FALSE" Sortable="FALSE" ID="{3774911a-f1f4-4272-8a26-948112514138}" SourceID="{{listid:Team Request Settings}}" StaticName="Description" Name="Description" ColName="ntext2" RowOrdinal="0" />
             <Field Type="Note" DisplayName="Value" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" NumLines="6" RichText="FALSE" Sortable="FALSE" ID="{6cdb8c97-ad75-47b8-8efc-823250e8bbbe}" SourceID="{{listid:Team Request Settings}}" StaticName="Value" Name="Value" ColName="ntext3" RowOrdinal="0" />
             <Field Type="Note" DisplayName="BlockedWordsValue" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" NumLines="6" RichText="FALSE" Sortable="FALSE" ID="{2f316ad6-2f38-40d3-806d-b85329a9128d}" SourceID="{{listid:Team Request Settings}}" StaticName="BlockedWordsValue" Name="BlockedWordsValue" ColName="ntext4" RowOrdinal="0" ShowInEditForm="FALSE" ShowInNewForm="FALSE" ShowInDisplayForm="FALSE" Version="62" />
+            <Field DisplayName="PrefixText" Format="Dropdown" MaxLength="255" Name="PrefixText" Title="PrefixText" Type="Text" ID="{6c8d1ee4-9217-43e6-bf2f-de910d8f7bc1}" SourceID="{{listid:Team Request Settings}}" StaticName="PrefixText" ColName="nvarchar6" RowOrdinal="0" Version="2" />
             <Field Description="Attribute to use for the team prefix." DisplayName="PrefixAttribute" FillInChoice="FALSE" Format="Dropdown" Name="PrefixAttribute" Title="PrefixAttribute" Type="Choice" ID="{63b0e4a4-96b7-43df-a281-a153eb73b945}" SourceID="{{listid:Team Request Settings}}" StaticName="PrefixAttribute" ColName="nvarchar4" RowOrdinal="0">
               <CHOICES>
                 <CHOICE>Department</CHOICE>
@@ -202,6 +205,10 @@
                 <CHOICE>JobTitle</CHOICE>
               </CHOICES>
             </Field>
+            <Field DisplayName="PrefixUseAttribute" Format="Dropdown" IsModern="TRUE" Name="PrefixUseAttribute" Title="PrefixUseAttribute" Type="Boolean" ID="{9d4d3c60-c93b-4911-900f-6ce1c224c7dc}" SourceID="{{listid:Team Request Settings}}" StaticName="PrefixUseAttribute" ColName="bit1" RowOrdinal="0">
+              <Default>0</Default>
+            </Field>
+            <Field DisplayName="SuffixText" Format="Dropdown" MaxLength="255" Name="SuffixText" Title="SuffixText" Type="Text" ID="{d6d7ae04-d0f2-4fc3-a0e2-3b789c089cd1}" SourceID="{{listid:Team Request Settings}}" StaticName="SuffixText" ColName="nvarchar7" RowOrdinal="0" Version="2" />
             <Field Description="Attribute to use for the suffix of the team." DisplayName="SuffixAttribute" FillInChoice="FALSE" Format="Dropdown" Name="SuffixAttribute" Title="SuffixAttribute" Type="Choice" ID="{f2c2a204-e212-490c-a3b7-cc7e35f4b932}" SourceID="{{listid:Team Request Settings}}" StaticName="SuffixAttribute" ColName="nvarchar5" RowOrdinal="0">
               <CHOICES>
                 <CHOICE>Department</CHOICE>
@@ -212,17 +219,12 @@
                 <CHOICE>JobTitle</CHOICE>
               </CHOICES>
             </Field>
-            <Field DisplayName="PrefixText" Format="Dropdown" MaxLength="255" Name="PrefixText" Title="PrefixText" Type="Text" ID="{6c8d1ee4-9217-43e6-bf2f-de910d8f7bc1}" SourceID="{{listid:Team Request Settings}}" StaticName="PrefixText" ColName="nvarchar6" RowOrdinal="0" Version="2" />
-            <Field DisplayName="SuffixText" Format="Dropdown" MaxLength="255" Name="SuffixText" Title="SuffixText" Type="Text" ID="{d6d7ae04-d0f2-4fc3-a0e2-3b789c089cd1}" SourceID="{{listid:Team Request Settings}}" StaticName="SuffixText" ColName="nvarchar7" RowOrdinal="0" Version="2" />
-            <Field DisplayName="PrefixUseAttribute" Format="Dropdown" IsModern="TRUE" Name="PrefixUseAttribute" Title="PrefixUseAttribute" Type="Boolean" ID="{9d4d3c60-c93b-4911-900f-6ce1c224c7dc}" SourceID="{{listid:Team Request Settings}}" StaticName="PrefixUseAttribute" ColName="bit1" RowOrdinal="0">
-              <Default>0</Default>
-            </Field>
             <Field DisplayName="SuffixUseAttribute" Format="Dropdown" IsModern="TRUE" Name="SuffixUseAttribute" Title="SuffixUseAttribute" Type="Boolean" ID="{05cc4132-5443-4c03-b896-17b2dbd97b61}" SourceID="{{listid:Team Request Settings}}" StaticName="SuffixUseAttribute" ColName="bit2" RowOrdinal="0">
               <Default>0</Default>
             </Field>
           </pnp:Fields>
           <pnp:Webhooks>
-            <pnp:Webhook ServerNotificationUrl="https://uksouth1.pushnp.svc.ms/notifications?token=1bd78f20-8cd2-40bc-a0b8-8b5bc92bc521" ExpiresInDays="1" />
+            <pnp:Webhook ServerNotificationUrl="https://uksouth1.pushnp.svc.ms/notifications?token=c0fc85e7-d74f-4664-ae64-2d99f1540ece" ExpiresInDays="1" />
           </pnp:Webhooks>
         </pnp:ListInstance>
         <pnp:ListInstance Title="Teams Requests" Description="" DocumentTemplate="" OnQuickLaunch="true" TemplateType="100" Url="Lists/TeamsRequests" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/Lists/TeamsRequests/DispForm.aspx" DefaultEditFormUrl="{site}/Lists/TeamsRequests/EditForm.aspx" DefaultNewFormUrl="{site}/Lists/TeamsRequests/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.png?rev=47" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="2" WriteSecurity="2" ValidationFormula="" ValidationMessage="">
@@ -333,8 +335,8 @@
           </pnp:Security>
           <pnp:Webhooks>
             <pnp:Webhook ServerNotificationUrl="https://uk-001.azure-apim.net/apim/sharepointonline/ontableupdatedhook?r=https%253a%252f%252fprod-11.uksouth.logic.azure.com%252fworkflows%252f67a8c9ba4ad548e6bc0932d80424d06d%252ftriggers%252fWhen_a_team_request_item_is_submitted%252fpaths%252finvoke%253fapi-version%253d2016-06-01%2526sp%253d%25252Ftriggers%25252FWhen_a_team_request_item_is_submitted%25252Frun%25252C%25252Ftriggers%25252FWhen_a_team_request_item_is_submitted%25252Fread%2526sv%253d1.0%2526sig%253dJD_dvvCiv9hv3ytg3T5NE6EdjpkLaqE2C3dojbasOR4" ExpiresInDays="2" />
-            <pnp:Webhook ServerNotificationUrl="https://uk-001.azure-apim.net/apim/sharepointonline/ontableupdatedhook?r=https%253a%252f%252fprod-00.uksouth.logic.azure.com%252fworkflows%252f650cdb90a0624975a5e74a4184aa4d90%252ftriggers%252fWhen_a_team_request_item_is_submitted%252fpaths%252finvoke%253fapi-version%253d2016-06-01%2526sp%253d%25252Ftriggers%25252FWhen_a_team_request_item_is_submitted%25252Frun%25252C%25252Ftriggers%25252FWhen_a_team_request_item_is_submitted%25252Fread%2526sv%253d1.0%2526sig%253dug1dB_WaR-O0k7wjAitcX0Kuh13gLa5wDJe6oj03R_w" ExpiresInDays="3" />
-            <pnp:Webhook ServerNotificationUrl="https://uksouth1.pushnp.svc.ms/notifications?token=3c4f01a5-778b-4e6b-8690-d69d3b93d6d9" ExpiresInDays="1" />
+            <pnp:Webhook ServerNotificationUrl="https://uk-001.azure-apim.net/apim/sharepointonline/ontableupdatedhook?r=https%253a%252f%252fprod-00.uksouth.logic.azure.com%252fworkflows%252f650cdb90a0624975a5e74a4184aa4d90%252ftriggers%252fWhen_a_team_request_item_is_submitted%252fpaths%252finvoke%253fapi-version%253d2016-06-01%2526sp%253d%25252Ftriggers%25252FWhen_a_team_request_item_is_submitted%25252Frun%25252C%25252Ftriggers%25252FWhen_a_team_request_item_is_submitted%25252Fread%2526sv%253d1.0%2526sig%253dug1dB_WaR-O0k7wjAitcX0Kuh13gLa5wDJe6oj03R_w" ExpiresInDays="2" />
+            <pnp:Webhook ServerNotificationUrl="https://uksouth1.pushnp.svc.ms/notifications?token=a4a1f13a-0e81-42cc-aeac-117655af1461" ExpiresInDays="1" />
           </pnp:Webhooks>
         </pnp:ListInstance>
         <pnp:ListInstance Title="Teams Templates" Description="" DocumentTemplate="" OnQuickLaunch="true" TemplateType="100" Url="Lists/TeamsTemplates" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/Lists/TeamsTemplates/DispForm.aspx" DefaultEditFormUrl="{site}/Lists/TeamsTemplates/EditForm.aspx" DefaultNewFormUrl="{site}/Lists/TeamsTemplates/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.png?rev=47" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
@@ -356,16 +358,17 @@
                 <FieldRef Name="TeamId" />
                 <FieldRef Name="AdminCenterTemplate" />
                 <FieldRef Name="PrefixText" />
-                <FieldRef Name="PrefixUseAttribute" />
                 <FieldRef Name="PrefixAttribute" />
+                <FieldRef Name="PrefixUseAttribute" />
                 <FieldRef Name="SuffixText" />
-                <FieldRef Name="SuffixUseAttribute" />
                 <FieldRef Name="SuffixAttribute" />
+                <FieldRef Name="SuffixUseAttribute" />
               </ViewFields>
               <RowLimit Paged="TRUE">30</RowLimit>
               <Aggregations Value="Off" />
               <JSLink>clienttemplates.js</JSLink>
               <CustomFormatter />
+              <ViewData />
             </View>
           </pnp:Views>
           <pnp:Fields>
@@ -376,9 +379,6 @@
               <Default>0</Default>
             </Field>
             <Field DisplayName="Prefix Text" Format="Dropdown" IsModern="TRUE" MaxLength="255" Name="PrefixText" Title="Prefix Text" Type="Text" ID="{05f9a46d-0815-41dc-ae94-35377d37edc5}" SourceID="{{listid:Teams Templates}}" StaticName="PrefixText" ColName="nvarchar6" RowOrdinal="0" />
-            <Field DisplayName="Prefix Use Attribute" Format="Dropdown" IsModern="TRUE" Name="PrefixUseAttribute" Title="Prefix Use Attribute" Type="Boolean" ID="{28d72217-6042-4240-bda0-f590da562955}" SourceID="{{listid:Teams Templates}}" StaticName="PrefixUseAttribute" ColName="bit2" RowOrdinal="0">
-              <Default>0</Default>
-            </Field>
             <Field CustomFormatter="{&quot;elmType&quot;:&quot;div&quot;,&quot;style&quot;:{&quot;flex-wrap&quot;:&quot;wrap&quot;,&quot;display&quot;:&quot;flex&quot;},&quot;children&quot;:[{&quot;elmType&quot;:&quot;div&quot;,&quot;style&quot;:{&quot;box-sizing&quot;:&quot;border-box&quot;,&quot;padding&quot;:&quot;4px 8px 5px 8px&quot;,&quot;display&quot;:&quot;flex&quot;,&quot;border-radius&quot;:&quot;16px&quot;,&quot;height&quot;:&quot;24px&quot;,&quot;align-items&quot;:&quot;center&quot;,&quot;white-space&quot;:&quot;nowrap&quot;,&quot;overflow&quot;:&quot;hidden&quot;,&quot;margin&quot;:&quot;4px 4px 4px 4px&quot;},&quot;attributes&quot;:{&quot;class&quot;:{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;Department&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;Company&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;Office&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;StateOrProvince&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;CountryOrRegion&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;JobTitle&quot;]},&quot;&quot;,&quot;sp-field-borderAllRegular sp-field-borderAllSolid sp-css-borderColor-neutralSecondary&quot;]}]}]}]}]}]}]}},&quot;children&quot;:[{&quot;elmType&quot;:&quot;span&quot;,&quot;style&quot;:{&quot;line-height&quot;:&quot;16px&quot;,&quot;height&quot;:&quot;14px&quot;},&quot;attributes&quot;:{&quot;iconName&quot;:{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;Department&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;Company&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;Office&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;StateOrProvince&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;CountryOrRegion&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;JobTitle&quot;]},&quot;&quot;,&quot;&quot;]}]}]}]}]}]}]}}},{&quot;elmType&quot;:&quot;span&quot;,&quot;style&quot;:{&quot;overflow&quot;:&quot;hidden&quot;,&quot;text-overflow&quot;:&quot;ellipsis&quot;,&quot;padding&quot;:&quot;0 3px&quot;},&quot;txtContent&quot;:&quot;@currentField&quot;,&quot;attributes&quot;:{&quot;class&quot;:{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;Department&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;Company&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;Office&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;StateOrProvince&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;CountryOrRegion&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;JobTitle&quot;]},&quot;&quot;,&quot;&quot;]}]}]}]}]}]}]}}}]}],&quot;templateId&quot;:&quot;BgColorChoicePill&quot;}" DisplayName="Prefix Attribute" FillInChoice="FALSE" Format="Dropdown" IsModern="TRUE" Name="PrefixAttribute" Title="Prefix Attribute" Type="Choice" ID="{fd537ff8-0663-4864-82b8-681e9430e144}" SourceID="{{listid:Teams Templates}}" StaticName="PrefixAttribute" ColName="nvarchar7" RowOrdinal="0">
               <CHOICES>
                 <CHOICE>Department</CHOICE>
@@ -389,10 +389,10 @@
                 <CHOICE>JobTitle</CHOICE>
               </CHOICES>
             </Field>
-            <Field DisplayName="Suffix Text" Format="Dropdown" IsModern="TRUE" MaxLength="255" Name="SuffixText" Title="Suffix Text" Type="Text" ID="{5c6449eb-be2d-4628-b82a-ed0faac4ce1b}" SourceID="{{listid:Teams Templates}}" StaticName="SuffixText" ColName="nvarchar8" RowOrdinal="0" />
-            <Field DisplayName="Suffix Use Attribute" Format="Dropdown" IsModern="TRUE" Name="SuffixUseAttribute" Title="Suffix Use Attribute" Type="Boolean" ID="{aff3c5e7-5629-43ee-abd1-30eda8d15073}" SourceID="{{listid:Teams Templates}}" StaticName="SuffixUseAttribute" ColName="bit3" RowOrdinal="0">
+            <Field DisplayName="Prefix Use Attribute" Format="Dropdown" IsModern="TRUE" Name="PrefixUseAttribute" Title="Prefix Use Attribute" Type="Boolean" ID="{28d72217-6042-4240-bda0-f590da562955}" SourceID="{{listid:Teams Templates}}" StaticName="PrefixUseAttribute" ColName="bit2" RowOrdinal="0">
               <Default>0</Default>
             </Field>
+            <Field DisplayName="Suffix Text" Format="Dropdown" IsModern="TRUE" MaxLength="255" Name="SuffixText" Title="Suffix Text" Type="Text" ID="{5c6449eb-be2d-4628-b82a-ed0faac4ce1b}" SourceID="{{listid:Teams Templates}}" StaticName="SuffixText" ColName="nvarchar8" RowOrdinal="0" />
             <Field CustomFormatter="{&quot;elmType&quot;:&quot;div&quot;,&quot;style&quot;:{&quot;flex-wrap&quot;:&quot;wrap&quot;,&quot;display&quot;:&quot;flex&quot;},&quot;children&quot;:[{&quot;elmType&quot;:&quot;div&quot;,&quot;style&quot;:{&quot;box-sizing&quot;:&quot;border-box&quot;,&quot;padding&quot;:&quot;4px 8px 5px 8px&quot;,&quot;display&quot;:&quot;flex&quot;,&quot;border-radius&quot;:&quot;16px&quot;,&quot;height&quot;:&quot;24px&quot;,&quot;align-items&quot;:&quot;center&quot;,&quot;white-space&quot;:&quot;nowrap&quot;,&quot;overflow&quot;:&quot;hidden&quot;,&quot;margin&quot;:&quot;4px 4px 4px 4px&quot;},&quot;attributes&quot;:{&quot;class&quot;:{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;Department&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;Company&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;Office&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;StateOrProvince&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;CountryOrRegion&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;JobTitle&quot;]},&quot;&quot;,&quot;sp-field-borderAllRegular sp-field-borderAllSolid sp-css-borderColor-neutralSecondary&quot;]}]}]}]}]}]}]}},&quot;children&quot;:[{&quot;elmType&quot;:&quot;span&quot;,&quot;style&quot;:{&quot;line-height&quot;:&quot;16px&quot;,&quot;height&quot;:&quot;14px&quot;},&quot;attributes&quot;:{&quot;iconName&quot;:{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;Department&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;Company&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;Office&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;StateOrProvince&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;CountryOrRegion&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;JobTitle&quot;]},&quot;&quot;,&quot;&quot;]}]}]}]}]}]}]}}},{&quot;elmType&quot;:&quot;span&quot;,&quot;style&quot;:{&quot;overflow&quot;:&quot;hidden&quot;,&quot;text-overflow&quot;:&quot;ellipsis&quot;,&quot;padding&quot;:&quot;0 3px&quot;},&quot;txtContent&quot;:&quot;@currentField&quot;,&quot;attributes&quot;:{&quot;class&quot;:{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;Department&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;Company&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;Office&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;StateOrProvince&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;CountryOrRegion&quot;]},&quot;&quot;,{&quot;operator&quot;:&quot;:&quot;,&quot;operands&quot;:[{&quot;operator&quot;:&quot;==&quot;,&quot;operands&quot;:[&quot;@currentField&quot;,&quot;JobTitle&quot;]},&quot;&quot;,&quot;&quot;]}]}]}]}]}]}]}}}]}],&quot;templateId&quot;:&quot;BgColorChoicePill&quot;}" DisplayName="Suffix Attribute" FillInChoice="FALSE" Format="Dropdown" IsModern="TRUE" Name="SuffixAttribute" Title="Suffix Attribute" Type="Choice" ID="{e5c19b2a-64d4-44d8-86d0-336717a23a86}" SourceID="{{listid:Teams Templates}}" StaticName="SuffixAttribute" ColName="nvarchar9" RowOrdinal="0">
               <CHOICES>
                 <CHOICE>Department</CHOICE>
@@ -403,9 +403,12 @@
                 <CHOICE>JobTitle</CHOICE>
               </CHOICES>
             </Field>
+            <Field DisplayName="Suffix Use Attribute" Format="Dropdown" IsModern="TRUE" Name="SuffixUseAttribute" Title="Suffix Use Attribute" Type="Boolean" ID="{aff3c5e7-5629-43ee-abd1-30eda8d15073}" SourceID="{{listid:Teams Templates}}" StaticName="SuffixUseAttribute" ColName="bit3" RowOrdinal="0">
+              <Default>0</Default>
+            </Field>
           </pnp:Fields>
           <pnp:Webhooks>
-            <pnp:Webhook ServerNotificationUrl="https://uksouth1.pushnp.svc.ms/notifications?token=de1e7ec4-352c-46c3-90e9-94a0b66f4085" ExpiresInDays="1" />
+            <pnp:Webhook ServerNotificationUrl="https://uksouth1.pushnp.svc.ms/notifications?token=88ffece4-2b15-4cb9-8ca5-95bfd6444604" ExpiresInDays="1" />
           </pnp:Webhooks>
         </pnp:ListInstance>
       </pnp:Lists>
