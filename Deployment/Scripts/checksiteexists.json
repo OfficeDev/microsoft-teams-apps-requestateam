@@ -309,8 +309,8 @@
                     "$connections": {
                         "value": {
                                     "keyvault": {
-                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/teamsautomate-kv')]",
-                                "connectionName": "teamsautomate-kv",
+                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/requestateam-kv')]",
+                                "connectionName": "requestateam-kv",
                                  "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/keyvault')]"
                             }
                         }

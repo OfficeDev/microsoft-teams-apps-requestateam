@@ -10,14 +10,6 @@
             "defaultValue": "",
             "type": "string"
         },
-        "appId": {
-            "defaultValue": "",
-            "type": "string"
-        },
-        "appSecret": {
-            "defaultValue": "",
-            "type": "string"
-        },
         "tenantId": {
             "defaultValue": "",
             "type": "string"
@@ -34,8 +26,8 @@
             "defaultvalue": "",
             "type": "string"
         },
-            "templatesListId": {
-            "defaultvalue": "",
+        "requestSettingsListsId": {
+            "defaultValue": "",
             "type": "string"
         },
         "serviceAccountUPN": {
@@ -67,8 +59,8 @@
                     "triggers": {
                         "When_an_item_is_created_or_modified": {
                             "recurrence": {
-                                "frequency": "Hour",
-                                "interval": 1
+                                "frequency": "Minute",
+                                "interval": 5
                             },
                             "splitOn": "@triggerBody()?['value']",
                             "type": "ApiConnection",
@@ -304,7 +296,7 @@
                                                     "type": "SetVariable",
                                                     "inputs": {
                                                         "name": "MembersRequestBody",
-                                                        "value": "{\n  \"displayName\": \"@{triggerBody()?['Title']}\",\n\"description\":\"@{triggerBody()?['TeamDescription']}\",\n  \"groupTypes\": [\n    \"Unified\"\n  ],\n  \"mailEnabled\": true,\n  \"mailNickname\": \"@{triggerBody()?['TeamAlias']}\",\n  \"members@odata.bind\": @{variables('Members')},\n  \"owners@odata.bind\": @{variables('Owners')},\n  \"securityEnabled\": false,\n\"visibility\":\"@{triggerBody()?['Visibility']?['Value']}\",\n\"classification\": @{if(empty(triggerBody()?['Classification']),'null',concat('\"',triggerBody()?['Classification'],'\"'))},\n \"resourceBehaviorOptions\": [\n        \"WelcomeEmailDisabled\"\n    ]\n}"
+                                                        "value": "{\n  \"displayName\": \"@{triggerBody()?['TeamDisplayName']}\",\n\"description\":\"@{triggerBody()?['TeamDescription']}\",\n  \"groupTypes\": [\n    \"Unified\"\n  ],\n  \"mailEnabled\": true,\n  \"mailNickname\": \"@{triggerBody()?['MailboxAlias']}\",\n  \"members@odata.bind\": @{variables('Members')},\n  \"owners@odata.bind\": @{variables('Owners')},\n  \"securityEnabled\": false,\n\"visibility\":\"@{triggerBody()?['Visibility']?['Value']}\",\n\"classification\": @{if(empty(triggerBody()?['Classification']),'null',concat('\"',triggerBody()?['Classification'],'\"'))},\n \"resourceBehaviorOptions\": [\n        \"WelcomeEmailDisabled\"\n    ]\n}"
                                                     }
                                                 }                           
                                                                 },
@@ -316,7 +308,7 @@
                                                         "type": "SetVariable",
                                                         "inputs": {
                                                             "name": "MembersRequestBody",
-                                                            "value": "{\n  \"displayName\": \"@{triggerBody()?['Title']}\",\n\"description\":\"@{triggerBody()?['TeamDescription']}\",\n  \"groupTypes\": [\n    \"Unified\"\n  ],\n  \"mailEnabled\": true,\n  \"mailNickname\": \"@{triggerBody()?['TeamAlias']}\",\n  \"owners@odata.bind\": @{variables('Owners')},\n  \"securityEnabled\": false,\n\"visibility\":\"@{triggerBody()?['Visibility']?['Value']}\",\n\"classification\": @{if(empty(triggerBody()?['Classification']),'null',concat('\\\"',triggerBody()?['Classification'],'\\\"'))},\n \"resourceBehaviorOptions\": [\n        \"WelcomeEmailDisabled\"\n    ]\n}"
+                                                            "value": "{\n  \"displayName\": \"@{triggerBody()?['TeamDisplayName']}\",\n\"description\":\"@{triggerBody()?['TeamDescription']}\",\n  \"groupTypes\": [\n    \"Unified\"\n  ],\n  \"mailEnabled\": true,\n  \"mailNickname\": \"@{triggerBody()?['MailboxAlias']}\",\n  \"owners@odata.bind\": @{variables('Owners')},\n  \"securityEnabled\": false,\n\"visibility\":\"@{triggerBody()?['Visibility']?['Value']}\",\n\"classification\": @{if(empty(triggerBody()?['Classification']),'null',concat('\\\"',triggerBody()?['Classification'],'\\\"'))},\n \"resourceBehaviorOptions\": [\n        \"WelcomeEmailDisabled\"\n    ]\n}"
                                                                         }
                                                                     }
                                                                 }
@@ -472,8 +464,8 @@
                                                      "body": {
                                                         "classification": "@if(empty(triggerBody()?['Classification']),null,triggerBody()?['Classification'])",
                                                         "description": "@{triggerBody()?['TeamDescription']}",
-                                                        "displayName": "@{triggerBody()?['Title']}",
-                                                        "mailNickname": "@{triggerBody()?['TeamAlias']}",
+                                                        "displayName": "@{triggerBody()?['TeamDisplayName']}",
+                                                        "mailNickname": "@{triggerBody()?['MailboxAlias']}",
                                                         "partsToClone": "apps,tabs,settings,channels",
                                                         "visibility": "@{triggerBody()?['Visibility']?['Value']}"
                                                            },
@@ -1531,7 +1523,7 @@
                     },
                      "Get_Client_ID": {
                             "runAfter": {
-                                "Initialize_TemplateVisibility_variable": [
+                                "Initialize_UseNamingConventions_variable": [
                                     "Succeeded"
                                 ]
                             },
@@ -1598,6 +1590,51 @@
                             "path": "/codeless/v1.0/users/@{encodeURIComponent(variables('ServiceAccountUPN'))}"
                         }
                     },
+                     "Get_settings": {
+                            "actions": {
+                                "Get_naming_convention_setting": {
+                                    "runAfter": {},
+                                    "type": "ApiConnection",
+                                    "inputs": {
+                                        "host": {
+                                            "connection": {
+                                                "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+                                            }
+                                        },
+                                        "method": "get",
+                                        "path": "[concat('/datasets/@{encodeURIComponent(encodeURIComponent(',variables('singlequote'),parameters('requestsSiteUrl'),variables('singlequote'),'))}/tables/@{encodeURIComponent(encodeURIComponent(',variables('singlequote'),parameters('requestSettingsListsId'),variables('singlequote'),'))}/items')]",
+                                        "queries": {
+                                            "$filter": "Title eq 'UseNamingConventions'"
+                                        }
+                                    }
+                                },
+                                "Loop_through_settings": {
+                                    "foreach": "@body('Get_naming_convention_setting')?['value']",
+                                    "actions": {
+                                        "Set_UseNamingConventions_variable": {
+                                            "runAfter": {},
+                                            "type": "SetVariable",
+                                            "inputs": {
+                                                "name": "UseNamingConventions",
+                                                "value": "@bool(items('Loop_through_settings')?['Value'])"
+                                            }
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Get_naming_convention_setting": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "type": "Foreach"
+                                }
+                            },
+                            "runAfter": {
+                                "Check_if_SharePoint_site_exists": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Scope"
+                        },
                                             "Initialize_BetaGraphURL_variable": {
                             "runAfter": {
                                 "Initialize_GraphURL_variable": [
@@ -1827,6 +1864,23 @@
                             ]
                         }
                     },
+                           "Initialize_UseNamingConventions_variable": {
+                            "runAfter": {
+                                "Initialize_TemplateVisibility_variable": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "UseNamingConventions",
+                                        "type": "boolean",
+                                        "value": "@false"
+                                    }
+                                ]
+                            }
+                        },
                     "Loop_through_Members": {
                         "foreach": "@triggerBody()?['Members']",
                         "actions": {
@@ -1858,7 +1912,7 @@
                             }
                         },
                         "runAfter": {
-                            "Check_if_SharePoint_site_exists": [
+                            "Get_settings": [
                                 "Succeeded"
                             ]
                         },
@@ -1908,7 +1962,7 @@
                             }
                         },
                         "runAfter": {
-                            "Check_if_SharePoint_site_exists": [
+                            "Get_settings": [
                                 "Succeeded"
                             ]
                         },
@@ -2031,28 +2085,28 @@
                 "$connections": {
                     "value": {
                            "keyvault": {
-                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/teamsautomate-kv')]",
+                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/requestateam-kv')]",
                                 "connectionName": "keyvault",
                                  "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/keyvault')]"
                             },
                         "office365": {
-                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/teamsautomate-o365outlook')]",
-                            "connectionName": "teamsautomate-o365outlook",
+                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/requestateam-o365outlook')]",
+                            "connectionName": "requestateam-o365outlook",
                             "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/office365')]"
                         },
                         "office365users": {
-                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/teamsautomate-o365users')]",
-                            "connectionName": "teamsautomate-o365users",
+                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/requestateam-o365users')]",
+                            "connectionName": "requestateam-o365users",
                             "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/office365users')]"
                         },
                         "sharepointonline": {
-                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/teamsautomate-spo')]",
-                            "connectionName": "teamsautomate-spo",
+                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/requestateam-spo')]",
+                            "connectionName": "requestateam-spo",
                             "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/sharepointonline')]"
                         },
                         "teams": {
-                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/teamsautomate-teams')]",
-                            "connectionName": "teamsautomate-teams",
+                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/requestateam-teams')]",
+                            "connectionName": "requestateam-teams",
                             "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/teams')]"
                               }
                         }

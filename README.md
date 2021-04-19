@@ -11,8 +11,8 @@ urlFragment: microsoft-teams-apps-requestateam
 
 # Request-a-team App Template
 
-| [Documentation](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Home) | [Deployment guide](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Deployment-Guide) | [Architecture](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Solution-Overview) | [Teams Templates](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Teams-Templates)
-| ---- | ---- | ---- | ---- |
+| [Documentation](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Home) | [Deployment guide](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Deployment-Guide) | [Architecture](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Solution-Overview) | [Teams Templates](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Teams-Templates) | [Naming Conventions](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Naming-Conventions)
+| ---- | ---- | ---- | ---- | ---- |
 
 Enterprise organizations have expressed a need to standardize and to promote best practices around the creation of new team instances. The **Request-a-team** App Template supports these goals by providing a framework that automates the team creation process based on core features and channel options which are relevant to optimizing usage. This enables faster response time for team requests and offers a wealth of personalization options for organizations to implement repeatable best practices on team collaboration. 
 
