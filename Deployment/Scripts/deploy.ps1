@@ -51,10 +51,9 @@
 .PARAMETER KeyVaultName
     Name for the Key Vault that will be provisioned to store the Azure ad app ID and secret. The Key Vault name must be unique and not exist in another subscription.
 
-
 .EXAMPLE
-    deploy.ps1 -TenantName "contoso" -RequestsSiteName "Teams Request" -RequestsSiteDesc "Site to Microsoft Teams requests" 
-    -ManagedPath "sites" -SubscriptionId "acb9bcbb-1f4b-44b9-960c-7ddaf4ad21d2" -Location "uksouth" -ResourceGroupName "requestateam-rg" -AppName "RequestATeam" -ServiceAccountUPN provisioning@contoso.com -IsEdu $false -KeyVaultName "requestateam-kv"
+    deploy.ps1 -TenantName "M365x023142" -TenantId "xxxxxxxx-xxxx-xxx-xxxxxxxxxxx" -RequestsSiteName "Request a team app" -RequestsSiteDesc "Used to store Teams Requests" 
+    -ManagedPath "sites" -SubscriptionId 7ed1653b-228c-4d26-a0c0-2cd164xxxxxx -Location "westus" -ResourceGroupName "teamsgovernanceapp-rg" -AppName "Requestateamapp" -ServiceAccountUPN "erviceaccount@M365x023142.onmicrosoft.com" -IsEdu $false -KeyVaultName "requestateam-kv"
 
 -----------------------------------------------------------------------------------------------------------------------------------
 Script name : deploy.ps1
