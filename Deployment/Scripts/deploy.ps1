@@ -249,14 +249,14 @@ function InstallModules ($modules) {
                 }
                 try {
                     Write-Host('Installing required PowerShell Module {0}' -f $module) -ForegroundColor Yellow
-                    Install-Module -Name $module -Scope CurrentUser -RequiredVersion "1.4.0"
+                    Install-Module -Name $module -Scope CurrentUser -RequiredVersion "1.4.0" -AllowClobber -Confirm:$false
                 } catch {
                     throw('Failed to install PowerShell module {0}: {1}' -f $module, $_.Exception.Message)
                 } 
             } else {
                 try {
                     Write-Host('Install required PowerShell Module {0}' -f $module) -ForegroundColor Yellow
-                    Install-Module -Name $module -Scope CurrentUser -Confirm:$false
+                    Install-Module -Name $module -Scope CurrentUser -AllowClobber -Confirm:$false
                 } catch {
                     throw('Failed to install PowerShell module {0}: {1}' -f $module, $_.Exception.Message)
                 } 
