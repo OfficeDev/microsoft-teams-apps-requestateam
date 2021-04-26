@@ -54,7 +54,7 @@
 
 .EXAMPLE
     deploy.ps1 -TenantName "contoso" -RequestsSiteName "Teams Request" -RequestsSiteDesc "Site to Microsoft Teams requests" 
-    -ManagedPath "sites" -SubscriptionId "acb9bcbb-1f4b-44b9-960c-7ddaf4ad21d2" -Location "uksouth" -ResourceGroupName "requestateam-rg" -AppName "RequestATeam" -ServiceAccountUPN provisioning@contoso.com -IsEdu $false -KeyValueName "requestateam-kv"
+    -ManagedPath "sites" -SubscriptionId "acb9bcbb-1f4b-44b9-960c-7ddaf4ad21d2" -Location "uksouth" -ResourceGroupName "requestateam-rg" -AppName "RequestATeam" -ServiceAccountUPN provisioning@contoso.com -IsEdu $false -KeyVaultName "requestateam-kv"
 
 -----------------------------------------------------------------------------------------------------------------------------------
 Script name : deploy.ps1
