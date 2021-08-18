@@ -590,7 +590,9 @@ function DeployARMTemplate {
     try { 
         # Deploy ARM templates
         Write-Host "Deploying api connections..." -ForegroundColor Yellow
-        az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'connections.json' --parameters "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "location=$global:location" "keyvaultName=$KeyVaultName"
+        az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'connections.json' --parameters "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "location=$global:location"
+
+        az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'keyvault.json' --parameters "subscriptionId=$subscriptionId" "tenantId=$TenantId" "appId=$global:appId" "appSecret=$global:appSecret" "location=$global:location" "keyvaultName=$KeyVaultName"
 
         Write-Host "Deploying logic apps..." -ForegroundColor Yellow
 

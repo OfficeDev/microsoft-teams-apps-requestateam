@@ -21,10 +21,6 @@
         "location": {
             "defaultvalue": "",
             "type": "string"
-        },
-         "keyvaultName": {
-            "defaultvalue": "",
-            "type": "string"
         }
     },
     "resources": [
@@ -82,25 +78,6 @@
                 },
                 "api": {
                     "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/teams')]"
-                }
-            }
-        },
-         {
-            "type": "Microsoft.Web/connections",
-            "apiVersion": "2016-06-01",
-            "name": "requestateam-kv",
-            "location": "[parameters('location')]",
-            "properties": {
-                "displayName": "Request a team - Key Vault",
-                "parameterValues": {
-                    "vaultName": "[parameters('keyvaultName')]",
-                    "token:clientId": "[parameters('appId')]",
-                    "token:clientSecret": "[parameters('appSecret')]",
-                    "token:TenantId": "[parameters('tenantId')]",
-                    "token:grantType": "client_credentials"
-                },
-                "api": {
-                    "id": "[concat('subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/keyvault')]"
                 }
             }
         }
