@@ -1,0 +1,51 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subscriptionId": {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "appId": {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "appSecret": {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "tenantId": {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "location": {
+            "defaultvalue": "",
+            "type": "string"
+        },
+         "keyvaultName": {
+            "defaultvalue": "",
+            "type": "string"
+        }
+    },
+    "resources": [
+         {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "requestateam-kv",
+            "location": "[parameters('location')]",
+            "properties": {
+                "displayName": "Request a team - Key Vault",
+                "parameterValues": {
+                    "vaultName": "[parameters('keyvaultName')]",
+                    "token:clientId": "[parameters('appId')]",
+                    "token:clientSecret": "[parameters('appSecret')]",
+                    "token:TenantId": "[parameters('tenantId')]",
+                    "token:grantType": "client_credentials"
+                },
+                "api": {
+                    "id": "[concat('subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/keyvault')]"
+                }
+            }
+        }
+    ]
+}
