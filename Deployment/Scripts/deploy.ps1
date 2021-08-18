@@ -249,14 +249,17 @@ function InstallModules ($modules) {
                 try {
                     Write-Host('Installing required PowerShell Module {0}' -f $module) -ForegroundColor Yellow
                     Install-Module -Name $module -Scope CurrentUser -RequiredVersion "1.4.0" -AllowClobber -Confirm:$false
-                } catch {
+                }
+                catch {
                     throw('Failed to install PowerShell module {0}: {1}' -f $module, $_.Exception.Message)
                 } 
-            } else {
+            }
+            else {
                 try {
                     Write-Host('Install required PowerShell Module {0}' -f $module) -ForegroundColor Yellow
                     Install-Module -Name $module -Scope CurrentUser -AllowClobber -Confirm:$false
-                } catch {
+                }
+                catch {
                     throw('Failed to install PowerShell module {0}: {1}' -f $module, $_.Exception.Message)
                 } 
             }
@@ -383,6 +386,13 @@ function ConfigureSharePointSite {
         $context.Load($siteRequestsSettingsList)
         $context.ExecuteQuery()
 
+        # Delete existing settings items
+        $settingsItems = Get-PnPListItem -List $siteRequestsSettingsList
+
+        foreach ($settingItem in $settingsItems) {
+            Remove-PnPListItem -List $siteRequestsSettingsList -Identity $settingItem -Force
+        }
+
         $siteRequestSettings = Import-Excel "$packageRootPath$settingsPath" -WorksheetName $siteRequestSettingsWorksheetName
         foreach ($setting in $siteRequestSettings) {
             if ($setting.Title -eq "TenantURL") {
@@ -426,6 +436,13 @@ function ConfigureSharePointSite {
         $context.Load($teamsTemplatesList)
         $context.ExecuteQuery()
         $global:teamsTemplatesListId = $teamsTemplatesList.Id
+
+        # Delete existing template items
+        $templateItems = Get-PnPListItem -List $teamsTemplatesList
+
+        foreach ($templateItem in $templateItems) {
+            Remove-PnPListItem -List $teamsTemplatesList -Identity $templateItem -Force
+        }
 
         $teamsTemplates = Import-Excel "$packageRootPath$settingsPath" -WorksheetName $teamsTemplatesWorksheetName
         foreach ($template in $teamsTemplates) {
@@ -562,7 +579,7 @@ function CreateConfigureKeyVault {
     Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'appid' -SecretValue (ConvertTo-SecureString -String $global:appId -AsPlainText -Force) | Out-Null
     Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'appsecret' -SecretValue (ConvertTo-SecureString -String $global:appSecret -AsPlainText -Force) | Out-Null
 
-    Set-AzKeyVaultAccessPolicy -VaultName $KeyVaultName -ObjectId $global:appServicePrincipalId -PermissionsToSecrets List,Get
+    Set-AzKeyVaultAccessPolicy -VaultName $KeyVaultName -ObjectId $global:appServicePrincipalId -PermissionsToSecrets List, Get
 
     Write-Host "Finished creating/updating Key Vault and setting secrets" -ForegroundColor Green
 
@@ -729,7 +746,7 @@ Write-Host "Installing required PowerShell Modules..." -ForegroundColor Yellow
 InstallModules -Modules $preReqModules
 foreach ($module in $preReqModules) {
     $instModule = Get-InstalledModule -Name $module -ErrorAction:SilentlyContinue
-    if (!$instModule)  {
+    if (!$instModule) {
         throw('Failed to install module {0}' -f $module)
     }
 }
