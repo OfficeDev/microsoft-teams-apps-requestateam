@@ -176,7 +176,12 @@ Param(
     [Parameter(Mandatory = $true,
         ValueFromPipeline = $true)]
     [String]
-    $KeyVaultName = $false
+    $KeyVaultName = $false,
+
+    [Parameter(Mandatory = $true,
+        ValueFromPipeline = $true)]
+    [String]
+    $EnableSensitivity = $false
 )
 
 Add-Type -AssemblyName System.Web
@@ -565,6 +570,14 @@ function CreateConfigureKeyVault {
     if ($null -eq $keyVault) {
         # Use the tenant name in the key vault name to ensure it is unique - first 8 characters only due to maximum allowed length of key vault names
         $keyVault = New-AzKeyVault -Name $KeyVaultName -ResourceGroupName $ResourceGroupName -Location $Location
+    }
+
+    If($EnableSensitivity)
+    {
+        # Add service account credentials to key vault (Required for sensitivity label functionality due to the current Graph API restriction only supporting delegated permissions)
+        $saCreds= Get-Credential -Message "Enter Service Account credentials (To enable sensitivity label functionality)"
+        Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'sausername' -SecretValue (ConvertTo-SecureString -String $saCreds.UserName -AsPlainText -Force) | Out-Null
+        Set-AzKeyVaultSecret -VaultName "testingcontdrat" -Name 'sapassword' -SecretValue (ConvertTo-SecureString -String $saCreds.GetNetworkCredential().Password -AsPlainText -Force) | Out-Null
     }
 
     # Create/update the secrets for the ad app id and password
