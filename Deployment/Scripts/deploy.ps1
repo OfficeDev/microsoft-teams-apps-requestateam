@@ -207,6 +207,7 @@ $teamsTemplatesWorksheetName = "Teams Templates"
 $requestsListName = "Teams Requests"
 $requestSettingsListName = "Team Request Settings"
 $teamsTemplatesListName = "Teams Templates"
+$ipLabelsListName = "IP Labels"
 
 #  Field names
 $TitleFieldName = "Title"
@@ -460,6 +461,12 @@ function ConfigureSharePointSite {
         }
         Write-Host "Added templates to Teams Templates list" -ForegroundColor Green
 
+        # Get id of the ip labels list
+        $ipLabelsList = Get-PnPList $ipLabelsListName
+        $context.Load($ipLabelsList)
+        $context.ExecuteQuery()
+        $global:ipLabelsListId = $ipLabelsList.Id
+
         Write-Host "Adding Service Account to Owners group" -ForegroundColor Yellow
 
         # Check if service account already exists in the site (service account is the same user that is authenticated to PnP)
@@ -605,6 +612,8 @@ function DeployARMTemplate {
   
         az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'processteamrequest.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "tenantId=$TenantId" "requestsSiteUrl=$requestsSiteUrl" "requestsListId=$global:requestsListId" "requestSettingsListsId=$global:requestSettingsListId" "location=$global:location" "serviceAccountUPN=$ServiceAccountUPN"
 
+        az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'synclabels.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "tenantId=$TenantId" "location=$location" "requestsSiteUrl=$requestsSiteUrl" "ipLabelsListId=$global:ipLabelsListId"
+        
         Write-Host "Finished deploying logic apps" -ForegroundColor Green
     }
     catch {

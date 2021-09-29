@@ -93,6 +93,178 @@
                                 "value": "https://graph.microsoft.com/v1.0/users/@{body('Get_service_account_user_profile')?['id']}"
                             }
                         },
+                                             "Apply_sensitivity_label": {
+                            "actions": {
+                                "Check_sensitivity_label_is_populated": {
+                                    "actions": {
+                                        "Apply_sensitivity_label_to_the_group": {
+                                            "runAfter": {
+                                                "Parse_get_access_token_JSON": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "Http",
+                                            "inputs": {
+                                                "body": {
+                                                    "assignedLabels": [
+                                                        {
+                                                            "labelId": "@{triggerBody()?['LabelId']}"
+                                                        }
+                                                    ]
+                                                },
+                                                "headers": {
+                                                    "authorization": "bearer @{body('Parse_get_access_token_JSON')?['access_token']}",
+                                                    "content-type": "application/json"
+                                                },
+                                                "method": "PATCH",
+                                                "uri": "@{variables('BetaGraphURL')}/groups/@{variables('TeamID')}"
+                                            }
+                                        },
+                                        "Get_access_token_for_service_account": {
+                                            "runAfter": {
+                                                "URL_encode_service_account_password": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "Http",
+                                            "inputs": {
+                                                "body": "grant_type=password&resource=https://graph.microsoft.com&client_id=@{body('Get_Client_ID')?['value']}&username=@{body('Get_service_account_username')?['value']}&password=@{outputs('URL_encode_service_account_password')}&client_secret=@{outputs('URL_encode_client_secret')}",
+                                                "headers": {
+                                                    "content-type": "application/x-www-form-urlencoded"
+                                                },
+                                                "method": "POST",
+                                                "uri": "https://login.microsoftonline.com/@{variables('TenantID')}/oauth2/token"
+                                            }
+                                        },
+                                        "Get_service_account_password": {
+                                            "runAfter": {
+                                                "Get_service_account_username": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "ApiConnection",
+                                            "inputs": {
+                                                "host": {
+                                                    "connection": {
+                                                        "name": "@parameters('$connections')['keyvault']['connectionId']"
+                                                    }
+                                                },
+                                                "method": "get",
+                                                "path": "/secrets/@{encodeURIComponent('sapassword')}/value"
+                                            },
+                                            "runtimeConfiguration": {
+                                                "secureData": {
+                                                    "properties": [
+                                                        "inputs",
+                                                        "outputs"
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "Get_service_account_username": {
+                                            "runAfter": {},
+                                            "type": "ApiConnection",
+                                            "inputs": {
+                                                "host": {
+                                                    "connection": {
+                                                        "name": "@parameters('$connections')['keyvault']['connectionId']"
+                                                    }
+                                                },
+                                                "method": "get",
+                                                "path": "/secrets/@{encodeURIComponent('sausername')}/value"
+                                            },
+                                            "runtimeConfiguration": {
+                                                "secureData": {
+                                                    "properties": [
+                                                        "inputs",
+                                                        "outputs"
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "Parse_get_access_token_JSON": {
+                                            "runAfter": {
+                                                "Get_access_token_for_service_account": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "ParseJson",
+                                            "inputs": {
+                                                "content": "@body('Get_access_token_for_service_account')",
+                                                "schema": {
+                                                    "properties": {
+                                                        "access_token": {
+                                                            "type": "string"
+                                                        },
+                                                        "expires_in": {
+                                                            "type": "string"
+                                                        },
+                                                        "expires_on": {
+                                                            "type": "string"
+                                                        },
+                                                        "ext_expires_in": {
+                                                            "type": "string"
+                                                        },
+                                                        "not_before": {
+                                                            "type": "string"
+                                                        },
+                                                        "resource": {
+                                                            "type": "string"
+                                                        },
+                                                        "token_type": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            }
+                                        },
+                                        "URL_encode_client_secret": {
+                                            "runAfter": {
+                                                "Get_service_account_password": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "Compose",
+                                            "inputs": "@encodeUriComponent(body('Get_Client_Secret')?['value'])"
+                                        },
+                                        "URL_encode_service_account_password": {
+                                            "runAfter": {
+                                                "URL_encode_client_secret": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "Compose",
+                                            "inputs": "@encodeUriComponent(body('Get_service_account_password')?['value'])"
+                                        }
+                                    },
+                                    "runAfter": {},
+                                    "expression": {
+                                        "and": [
+                                            {
+                                                "equals": [
+                                                    "@variables('EnableSensitivityLabels')",
+                                                    "@true"
+                                                ]
+                                            },
+                                            {
+                                                "equals": [
+                                                    "@empty(triggerBody()?['LabelId'])",
+                                                    "@false"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "type": "If"
+                                }
+                            },
+                            "runAfter": {
+                                "Create_team": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Scope"
+                        },
                         "Check_if_SharePoint_site_exists": {
                             "actions": {
                                   "Check_response": {
@@ -1523,7 +1695,7 @@
                     },
                      "Get_Client_ID": {
                             "runAfter": {
-                                "Initialize_UseNamingConventions_variable": [
+                                "Initialize_EnableSensitivityLabels_variable": [
                                     "Succeeded"
                                 ]
                             },
@@ -1592,7 +1764,7 @@
                     },
                      "Get_settings": {
                             "actions": {
-                                "Get_naming_convention_setting": {
+                                "Get_settings_items": {
                                     "runAfter": {},
                                     "type": "ApiConnection",
                                     "inputs": {
@@ -1602,15 +1774,18 @@
                                             }
                                         },
                                         "method": "get",
-                                        "path": "[concat('/datasets/@{encodeURIComponent(encodeURIComponent(',variables('singlequote'),parameters('requestsSiteUrl'),variables('singlequote'),'))}/tables/@{encodeURIComponent(encodeURIComponent(',variables('singlequote'),parameters('requestSettingsListsId'),variables('singlequote'),'))}/items')]",
-                                        "queries": {
-                                            "$filter": "Title eq 'UseNamingConventions'"
-                                        }
+                                        "path": "[concat('/datasets/@{encodeURIComponent(encodeURIComponent(',variables('singlequote'),parameters('requestsSiteUrl'),variables('singlequote'),'))}/tables/@{encodeURIComponent(encodeURIComponent(',variables('singlequote'),parameters('requestSettingsListsId'),variables('singlequote'),'))}/items')]"
                                     }
                                 },
                                 "Loop_through_settings": {
-                                    "foreach": "@body('Get_naming_convention_setting')?['value']",
+                                    "foreach": "@body('Get_settings_items')?['value']",
                                     "actions": {
+                                        "Check_title": {
+                                            "runAfter": {},
+                                            "cases": {
+                                                "Case_Naming_Conventions": {
+                                                    "case": "UseNamingConventions",
+                                                    "actions": {
                                         "Set_UseNamingConventions_variable": {
                                             "runAfter": {},
                                             "type": "SetVariable",
@@ -1619,9 +1794,31 @@
                                                 "value": "@bool(items('Loop_through_settings')?['Value'])"
                                             }
                                         }
+                                           }
+                                                },
+                                                "Case_Sensitivity_Labels": {
+                                                    "case": "EnableSensitivityLabels",
+                                                    "actions": {
+                                                        "Set_EnableSensitivityLabels_variable": {
+                                                            "runAfter": {},
+                                                            "type": "SetVariable",
+                                                            "inputs": {
+                                                                "name": "EnableSensitivityLabels",
+                                                                "value": "@bool(items('Loop_through_settings')?['Value'])"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                              "default": {
+                                                "actions": {}
+                                            },
+                                            "expression": "@items('Loop_through_settings')?['Title']",
+                                            "type": "Switch"
+                                        }
                                     },
                                     "runAfter": {
-                                        "Get_naming_convention_setting": [
+                                        "Get_settings_items": [
                                             "Succeeded"
                                         ]
                                     },
@@ -1668,6 +1865,23 @@
                             ]
                         }
                     },
+                       "Initialize_EnableSensitivityLabels_variable": {
+                            "runAfter": {
+                                "Initialize_UseNamingConventions_variable": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "EnableSensitivityLabels",
+                                        "type": "boolean",
+                                        "value": "@false"
+                                    }
+                                ]
+                            }
+                        },
                     "Initialize_GraphURL_variable": {
                         "runAfter": {
                             "Initialize_TenantID_variable": [
@@ -1970,7 +2184,7 @@
                     },
                             "Post_welcome_message_to_general_channel": {
                                 "runAfter": {
-                                    "Create_team": [
+                                "Apply_sensitivity_label": [
                                         "Succeeded"
                                     ]
                                 },

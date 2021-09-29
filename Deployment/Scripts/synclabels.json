@@ -1,0 +1,322 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceGroupName": {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "subscriptionId": {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "tenantId": {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "location": {
+            "defaultvalue": "",
+            "type": "string"
+        },
+        "requestsSiteUrl": {
+            "defaultvalue": "",
+            "type": "string"
+        },
+        "ipLabelsListId": {
+            "defaultvalue": "",
+            "type": "string"
+        }
+    },
+    "variables": {
+        "Singlequote": "'"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "SyncLabels",
+            "location": "[parameters('location')]",
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "Recurrence": {
+                            "recurrence": {
+                                "frequency": "Day",
+                                "interval": 1
+                            },
+                            "evaluatedRecurrence": {
+                                "frequency": "Day",
+                                "interval": 1
+                            },
+                            "type": "Recurrence"
+                        }
+                    },
+                    "actions": {
+                        "Get_Client_ID": {
+                            "runAfter": {
+                                "Initialize_GraphURL_variable": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['keyvault']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/secrets/@{encodeURIComponent('appid')}/value"
+                            },
+                            "description": "Get Azure ad app client id from key vault."
+                        },
+                        "Get_Client_Secret": {
+                            "runAfter": {
+                                "Get_Client_ID": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['keyvault']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/secrets/@{encodeURIComponent('appsecret')}/value"
+                            },
+                            "description": "Get Azure ad app secret from key vault."
+                        },
+                        "Initialize_GraphURL_variable": {
+                            "runAfter": {
+                                "Initialize_TenantID_variable": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "GraphURL",
+                                        "type": "string",
+                                        "value": "https://graph.microsoft.com/beta"
+                                    }
+                                ]
+                            }
+                        },
+                        "Initialize_TenantID_variable": {
+                            "runAfter": {},
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "TenantID",
+                                        "type": "string",
+                                        "value": "[parameters('tenantId')]"
+                                    }
+                                ]
+                            }
+                        },
+                        "List_sensitivity_labels": {
+                            "runAfter": {
+                                "Get_Client_Secret": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Http",
+                            "inputs": {
+                                "authentication": {
+                                    "audience": "https://graph.microsoft.com",
+                                    "clientId": "@body('Get_Client_ID')?['value']",
+                                    "secret": "@body('Get_Client_Secret')?['value']",
+                                    "tenant": "@variables('TenantID')",
+                                    "type": "ActiveDirectoryOAuth"
+                                },
+                                "headers": {
+                                    "content-type": "application/json"
+                                },
+                                "method": "GET",
+                                "uri": "@{variables('GraphURL')}/informationProtection/policy/labels"
+                            }
+                        },
+                        "Loop_through_sensitivity_labels": {
+                            "foreach": "@body('Parse_sensitivity_labels_JSON')?['value']",
+                            "actions": {
+                                "Check_if_the_label_was_found_in_the_list": {
+                                    "actions": {
+                                        "Create_label_item": {
+                                            "runAfter": {},
+                                            "type": "ApiConnection",
+                                            "inputs": {
+                                                "body": {
+                                                    "LabelDescription": "@items('Loop_through_sensitivity_labels')?['description']",
+                                                    "LabelId": "@items('Loop_through_sensitivity_labels')?['id']",
+                                                    "LabelName": "@items('Loop_through_sensitivity_labels')?['name']",
+                                                    "Title": "@items('Loop_through_sensitivity_labels')?['name']"
+                                                },
+                                                "host": {
+                                                    "connection": {
+                                                        "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+                                                    }
+                                                },
+                                                "method": "post",
+                                                "path": "[concat('/datasets/@{encodeURIComponent(encodeURIComponent(',variables('singlequote'),parameters('requestsSiteUrl'),variables('singlequote'),'))}/tables/@{encodeURIComponent(encodeURIComponent(',variables('singlequote'),parameters('ipLabelsListId'),variables('singlequote'),'))}/items')]"
+                                            }
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Get_label_from_the_SharePoint_list": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "else": {
+                                        "actions": {
+                                            "Update_label_list_item": {
+                                                "runAfter": {},
+                                                "type": "ApiConnection",
+                                                "inputs": {
+                                                    "body": {
+                                                        "LabelDescription": "@items('Loop_through_sensitivity_labels')?['description']",
+                                                        "LabelId": "@items('Loop_through_sensitivity_labels')?['id']",
+                                                        "LabelName": "@items('Loop_through_sensitivity_labels')?['name']",
+                                                        "Title": "@items('Loop_through_sensitivity_labels')?['name']"
+                                                    },
+                                                    "host": {
+                                                        "connection": {
+                                                            "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+                                                        }
+                                                    },
+                                                    "method": "patch",
+                                                    "path": "[concat('/datasets/@{encodeURIComponent(encodeURIComponent(',variables('singlequote'),parameters('requestsSiteUrl'),variables('singlequote'),'))}/tables/@{encodeURIComponent(encodeURIComponent(',variables('singlequote'),parameters('ipLabelsListId'),variables('singlequote'),'))}/items/@{encodeURIComponent(first(body(',variables('singlequote'),'Get_label_from_the_sharepoint_list',variables('Singlequote'),'?[',variables('singlequote'),'Value',variables('singlequote'),'])?[',variables('singlequote'),'ID',variables('singlequote'),'])}')]"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "expression": {
+                                        "and": [
+                                            {
+                                                "equals": [
+                                                    "@length(body('Get_label_from_the_SharePoint_list')?['value'])",
+                                                    0
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "type": "If"
+                                },
+                                "Get_label_from_the_SharePoint_list": {
+                                    "runAfter": {},
+                                    "type": "ApiConnection",
+                                    "inputs": {
+                                        "host": {
+                                            "connection": {
+                                                "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+                                            }
+                                        },
+                                        "method": "get",
+                                        "path": "[concat('/datasets/@{encodeURIComponent(encodeURIComponent(',variables('singlequote'),parameters('requestsSiteUrl'),variables('singlequote'),'))}/tables/@{encodeURIComponent(encodeURIComponent(',variables('singlequote'),parameters('ipLabelsListId'),variables('singlequote'),'))}/items')]",
+                                        "queries": {
+                                            "$filter": "LabelId eq '@{items('Loop_through_sensitivity_labels')?['id']}'"
+                                        }
+                                    }
+                                }
+                            },
+                            "runAfter": {
+                                "Parse_sensitivity_labels_JSON": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Foreach"
+                        },
+                        "Parse_sensitivity_labels_JSON": {
+                            "runAfter": {
+                                "List_sensitivity_labels": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "@body('List_sensitivity_labels')",
+                                "schema": {
+                                    "properties": {
+                                        "@@odata.context": {
+                                            "type": "string"
+                                        },
+                                        "value": {
+                                            "items": {
+                                                "properties": {
+                                                    "color": {
+                                                        "type": "string"
+                                                    },
+                                                    "description": {
+                                                        "type": "string"
+                                                    },
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "isActive": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "parent": {},
+                                                    "sensitivity": {
+                                                        "type": "integer"
+                                                    },
+                                                    "tooltip": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "name",
+                                                    "description",
+                                                    "color",
+                                                    "sensitivity",
+                                                    "tooltip",
+                                                    "isActive",
+                                                    "parent"
+                                                ],
+                                                "type": "object"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "keyvault": {
+                                "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/requestateam-kv')]",
+                                "connectionName": "keyvault",
+                                "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/keyvault')]"
+                            },
+                            "sharepointonline": {
+                                "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/requestateam-spo')]",
+                                "connectionName": "requestateam-spo",
+                                "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/sharepointonline')]"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
