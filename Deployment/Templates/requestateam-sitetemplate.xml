@@ -491,9 +491,8 @@
             <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false">
               <pnp:RoleAssignment Principal="{associatedownergroupid}" RoleDefinition="Full Control" />
               <pnp:RoleAssignment Principal="{associatedvisitorgroupid}" RoleDefinition="Edit" />
-              <pnp:RoleAssignment Principal="{associatedmembergroupid}" RoleDefinition="Edit" />
-              <pnp:RoleAssignment Principal="i:0#.f|membership|admin@contosodev.sharepointalex.uk" RoleDefinition="Full Control" />
-            </pnp:BreakRoleInheritance>
+              <pnp:RoleAssignment Principal="{associatedmembergroupid}" RoleDefinition="Edit" />           
+               </pnp:BreakRoleInheritance>
           </pnp:Security>
           <pnp:Webhooks>
             <pnp:Webhook ServerNotificationUrl="https://uk-001.azure-apim.net/apim/sharepointonline/ontableupdatedhook?r=https%253a%252f%252fprod-11.uksouth.logic.azure.com%252fworkflows%252f67a8c9ba4ad548e6bc0932d80424d06d%252ftriggers%252fWhen_a_team_request_item_is_submitted%252fpaths%252finvoke%253fapi-version%253d2016-06-01%2526sp%253d%25252Ftriggers%25252FWhen_a_team_request_item_is_submitted%25252Frun%25252C%25252Ftriggers%25252FWhen_a_team_request_item_is_submitted%25252Fread%2526sv%253d1.0%2526sig%253dJD_dvvCiv9hv3ytg3T5NE6EdjpkLaqE2C3dojbasOR4" ExpiresInDays="3" />

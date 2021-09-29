@@ -579,17 +579,19 @@ function CreateConfigureKeyVault {
         $keyVault = New-AzKeyVault -Name $KeyVaultName -ResourceGroupName $ResourceGroupName -Location $Location
     }
 
+     # Create/update the secrets for the ad app id and password
+     Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'appid' -SecretValue (ConvertTo-SecureString -String $global:appId -AsPlainText -Force) | Out-Null
+     Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'appsecret' -SecretValue (ConvertTo-SecureString -String $global:appSecret -AsPlainText -Force) | Out-Null
+
     If($EnableSensitivity)
     {
         # Add service account credentials to key vault (Required for sensitivity label functionality due to the current Graph API restriction only supporting delegated permissions)
         $saCreds= Get-Credential -Message "Enter Service Account credentials (To enable sensitivity label functionality)"
         Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'sausername' -SecretValue (ConvertTo-SecureString -String $saCreds.UserName -AsPlainText -Force) | Out-Null
-        Set-AzKeyVaultSecret -VaultName "testingcontdrat" -Name 'sapassword' -SecretValue (ConvertTo-SecureString -String $saCreds.GetNetworkCredential().Password -AsPlainText -Force) | Out-Null
+        Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'sapassword' -SecretValue (ConvertTo-SecureString -String $saCreds.GetNetworkCredential().Password -AsPlainText -Force) | Out-Null
     }
 
-    # Create/update the secrets for the ad app id and password
-    Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'appid' -SecretValue (ConvertTo-SecureString -String $global:appId -AsPlainText -Force) | Out-Null
-    Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'appsecret' -SecretValue (ConvertTo-SecureString -String $global:appSecret -AsPlainText -Force) | Out-Null
+   
 
     Set-AzKeyVaultAccessPolicy -VaultName $KeyVaultName -ObjectId $global:appServicePrincipalId -PermissionsToSecrets List, Get
 

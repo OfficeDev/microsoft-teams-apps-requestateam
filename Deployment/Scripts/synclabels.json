@@ -77,7 +77,15 @@
                                 "method": "get",
                                 "path": "/secrets/@{encodeURIComponent('appid')}/value"
                             },
-                            "description": "Get Azure ad app client id from key vault."
+                            "description": "Get Azure ad app client id from key vault.",
+                            "runtimeConfiguration": {
+                                "secureData": {
+                                    "properties": [
+                                        "inputs",
+                                        "outputs"
+                                    ]
+                                }
+                            }
                         },
                         "Get_Client_Secret": {
                             "runAfter": {
@@ -95,7 +103,15 @@
                                 "method": "get",
                                 "path": "/secrets/@{encodeURIComponent('appsecret')}/value"
                             },
-                            "description": "Get Azure ad app secret from key vault."
+                            "description": "Get Azure ad app secret from key vault.",
+                            "runtimeConfiguration": {
+                                "secureData": {
+                                    "properties": [
+                                        "inputs",
+                                        "outputs"
+                                    ]
+                                }
+                            }
                         },
                         "Initialize_GraphURL_variable": {
                             "runAfter": {
@@ -197,7 +213,7 @@
                                                         }
                                                     },
                                                     "method": "patch",
-                                                    "path": "[concat('/datasets/@{encodeURIComponent(encodeURIComponent(',variables('singlequote'),parameters('requestsSiteUrl'),variables('singlequote'),'))}/tables/@{encodeURIComponent(encodeURIComponent(',variables('singlequote'),parameters('ipLabelsListId'),variables('singlequote'),'))}/items/@{encodeURIComponent(first(body(',variables('singlequote'),'Get_label_from_the_sharepoint_list',variables('Singlequote'),'?[',variables('singlequote'),'Value',variables('singlequote'),'])?[',variables('singlequote'),'ID',variables('singlequote'),'])}')]"
+                                                    "path": "[concat('/datasets/@{encodeURIComponent(encodeURIComponent(',variables('singlequote'),parameters('requestsSiteUrl'),variables('singlequote'),'))}/tables/@{encodeURIComponent(encodeURIComponent(',variables('singlequote'),parameters('ipLabelsListId'),variables('singlequote'),'))}/items/@{encodeURIComponent(first(body(',variables('singlequote'),'Get_label_from_the_sharepoint_list',variables('Singlequote'),')?[',variables('singlequote'),'Value',variables('singlequote'),'])?[',variables('singlequote'),'ID',variables('singlequote'),'])}')]"
                                                 }
                                             }
                                         }
