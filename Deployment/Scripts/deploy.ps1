@@ -402,6 +402,12 @@ function ConfigureSharePointSite {
             if ($setting.Title -eq "SiteClassifications") {
                 $setting.Value = $global:siteClassifications
             }
+            if( $setting.Title -eq "EnableSensitivityLabels") {
+                If($EnableSensitivity)
+                {
+                    $setting.Value = "true"
+                }
+            }
             $listItemCreationInformation = New-Object Microsoft.SharePoint.Client.ListItemCreationInformation
             $newItem = $siteRequestsSettingsList.AddItem($listItemCreationInformation)
             $newitem["Title"] = $setting.Title
