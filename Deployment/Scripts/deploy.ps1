@@ -591,8 +591,10 @@ function CreateConfigureKeyVault {
 
     If($EnableSensitivity)
     {
+        Write-Host "You chose to enable the sensitivity label functionality. Make sure the Service Account you use does NOT have MFA enabled." -ForegroundColor Yellow
+
         # Add service account credentials to key vault (Required for sensitivity label functionality due to the current Graph API restriction only supporting delegated permissions)
-        $saCreds= Get-Credential -Message "Enter Service Account credentials (To enable sensitivity label functionality)"
+        $saCreds= Get-Credential -Message "Enter Service Account credentials (To enable sensitivity label functionality). Must NOT have MFA enabled."
         Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'sausername' -SecretValue (ConvertTo-SecureString -String $saCreds.UserName -AsPlainText -Force) | Out-Null
         Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'sapassword' -SecretValue (ConvertTo-SecureString -String $saCreds.GetNetworkCredential().Password -AsPlainText -Force) | Out-Null
     }
