@@ -51,13 +51,16 @@
 .PARAMETER KeyVaultName
     Name for the Key Vault that will be provisioned to store the Azure ad app ID and secret. The Key Vault name must be unique and not exist in another subscription.
 
+.PARAMETER EnableSensitivity
+    Enable the sensitivity label functionality.
+
 .EXAMPLE
     deploy.ps1 -TenantName "M365x023142" -TenantId "xxxxxxxx-xxxx-xxx-xxxxxxxxxxx" -RequestsSiteName "Request a team app" -RequestsSiteDesc "Used to store Teams Requests" 
-    -ManagedPath "sites" -SubscriptionId 7ed1653b-228c-4d26-a0c0-2cd164xxxxxx -Location "westus" -ResourceGroupName "teamsgovernanceapp-rg" -AppName "Requestateamapp" -ServiceAccountUPN "erviceaccount@M365x023142.onmicrosoft.com" -IsEdu $false -KeyVaultName "requestateam-kv"
+    -ManagedPath "sites" -SubscriptionId 7ed1653b-228c-4d26-a0c0-2cd164xxxxxx -Location "westus" -ResourceGroupName "teamsgovernanceapp-rg" -AppName "Requestateamapp" -ServiceAccountUPN "erviceaccount@M365x023142.onmicrosoft.com" -IsEdu $false -KeyVaultName "requestateam-kv" -EnableSensitivity $false
 
 -----------------------------------------------------------------------------------------------------------------------------------
 Script name : deploy.ps1
-Authors : Alex Clark (SharePoint PFE, Microsoft)
+Authors : Alex Clark (Customer Engineer, Microsoft)
 Version : 1.0
 Dependencies :
 -----------------------------------------------------------------------------------------------------------------------------------
@@ -402,9 +405,8 @@ function ConfigureSharePointSite {
             if ($setting.Title -eq "SiteClassifications") {
                 $setting.Value = $global:siteClassifications
             }
-            if( $setting.Title -eq "EnableSensitivityLabels") {
-                If($EnableSensitivity)
-                {
+            if ( $setting.Title -eq "EnableSensitivityLabels") {
+                If ($EnableSensitivity) {
                     $setting.Value = "true"
                 }
             }
@@ -585,16 +587,15 @@ function CreateConfigureKeyVault {
         $keyVault = New-AzKeyVault -Name $KeyVaultName -ResourceGroupName $ResourceGroupName -Location $Location
     }
 
-     # Create/update the secrets for the ad app id and password
-     Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'appid' -SecretValue (ConvertTo-SecureString -String $global:appId -AsPlainText -Force) | Out-Null
-     Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'appsecret' -SecretValue (ConvertTo-SecureString -String $global:appSecret -AsPlainText -Force) | Out-Null
+    # Create/update the secrets for the ad app id and password
+    Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'appid' -SecretValue (ConvertTo-SecureString -String $global:appId -AsPlainText -Force) | Out-Null
+    Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'appsecret' -SecretValue (ConvertTo-SecureString -String $global:appSecret -AsPlainText -Force) | Out-Null
 
-    If($EnableSensitivity)
-    {
+    If ($EnableSensitivity) {
         Write-Host "You chose to enable the sensitivity label functionality. Make sure the Service Account you use does NOT have MFA enabled." -ForegroundColor Yellow
 
         # Add service account credentials to key vault (Required for sensitivity label functionality due to the current Graph API restriction only supporting delegated permissions)
-        $saCreds= Get-Credential -Message "Enter Service Account credentials (To enable sensitivity label functionality). Must NOT have MFA enabled."
+        $saCreds = Get-Credential -Message "Enter Service Account credentials (To enable sensitivity label functionality). Must NOT have MFA enabled."
         Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'sausername' -SecretValue (ConvertTo-SecureString -String $saCreds.UserName -AsPlainText -Force) | Out-Null
         Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'sapassword' -SecretValue (ConvertTo-SecureString -String $saCreds.GetNetworkCredential().Password -AsPlainText -Force) | Out-Null
     }
