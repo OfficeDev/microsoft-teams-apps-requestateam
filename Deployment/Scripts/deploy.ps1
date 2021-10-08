@@ -51,13 +51,16 @@
 .PARAMETER KeyVaultName
     Name for the Key Vault that will be provisioned to store the Azure ad app ID and secret. The Key Vault name must be unique and not exist in another subscription.
 
+.PARAMETER EnableSensitivity
+    Enable the sensitivity label functionality.
+
 .EXAMPLE
     deploy.ps1 -TenantName "M365x023142" -TenantId "xxxxxxxx-xxxx-xxx-xxxxxxxxxxx" -RequestsSiteName "Request a team app" -RequestsSiteDesc "Used to store Teams Requests" 
-    -ManagedPath "sites" -SubscriptionId 7ed1653b-228c-4d26-a0c0-2cd164xxxxxx -Location "westus" -ResourceGroupName "teamsgovernanceapp-rg" -AppName "Requestateamapp" -ServiceAccountUPN "erviceaccount@M365x023142.onmicrosoft.com" -IsEdu $false -KeyVaultName "requestateam-kv"
+    -ManagedPath "sites" -SubscriptionId 7ed1653b-228c-4d26-a0c0-2cd164xxxxxx -Location "westus" -ResourceGroupName "teamsgovernanceapp-rg" -AppName "Requestateamapp" -ServiceAccountUPN "erviceaccount@M365x023142.onmicrosoft.com" -IsEdu $false -KeyVaultName "requestateam-kv" -EnableSensitivity $false
 
 -----------------------------------------------------------------------------------------------------------------------------------
 Script name : deploy.ps1
-Authors : Alex Clark (SharePoint PFE, Microsoft)
+Authors : Alex Clark (Customer Engineer, Microsoft)
 Version : 1.0
 Dependencies :
 -----------------------------------------------------------------------------------------------------------------------------------
@@ -176,7 +179,12 @@ Param(
     [Parameter(Mandatory = $true,
         ValueFromPipeline = $true)]
     [String]
-    $KeyVaultName = $false
+    $KeyVaultName = $false,
+
+    [Parameter(Mandatory = $true,
+        ValueFromPipeline = $true)]
+    [String]
+    $EnableSensitivity = $false
 )
 
 Add-Type -AssemblyName System.Web
@@ -202,6 +210,7 @@ $teamsTemplatesWorksheetName = "Teams Templates"
 $requestsListName = "Teams Requests"
 $requestSettingsListName = "Team Request Settings"
 $teamsTemplatesListName = "Teams Templates"
+$ipLabelsListName = "IP Labels"
 
 #  Field names
 $TitleFieldName = "Title"
@@ -250,7 +259,7 @@ function InstallModules ($modules) {
 
             try {
                 Write-Host('Installing required PowerShell Module {0}' -f $module) -ForegroundColor Yellow
-                Install-Module -Name $module -Scope CurrentUser -RequiredVersion "1.4.0" -AllowClobber -Confirm:$false
+                Install-Module -Name $module -Scope CurrentUser -AllowClobber -Confirm:$false
             }
             catch {
                 throw('Failed to install PowerShell module {0}: {1}' -f $module, $_.Exception.Message)
@@ -396,6 +405,11 @@ function ConfigureSharePointSite {
             if ($setting.Title -eq "SiteClassifications") {
                 $setting.Value = $global:siteClassifications
             }
+            if ( $setting.Title -eq "EnableSensitivityLabels") {
+                If ($EnableSensitivity) {
+                    $setting.Value = "true"
+                }
+            }
             $listItemCreationInformation = New-Object Microsoft.SharePoint.Client.ListItemCreationInformation
             $newItem = $siteRequestsSettingsList.AddItem($listItemCreationInformation)
             $newitem["Title"] = $setting.Title
@@ -454,6 +468,12 @@ function ConfigureSharePointSite {
             }
         }
         Write-Host "Added templates to Teams Templates list" -ForegroundColor Green
+
+        # Get id of the ip labels list
+        $ipLabelsList = Get-PnPList $ipLabelsListName
+        $context.Load($ipLabelsList)
+        $context.ExecuteQuery()
+        $global:ipLabelsListId = $ipLabelsList.Id
 
         Write-Host "Adding Service Account to Owners group" -ForegroundColor Yellow
 
@@ -571,6 +591,17 @@ function CreateConfigureKeyVault {
     Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'appid' -SecretValue (ConvertTo-SecureString -String $global:appId -AsPlainText -Force) | Out-Null
     Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'appsecret' -SecretValue (ConvertTo-SecureString -String $global:appSecret -AsPlainText -Force) | Out-Null
 
+    If ($EnableSensitivity) {
+        Write-Host "You chose to enable the sensitivity label functionality. Make sure the Service Account you use does NOT have MFA enabled." -ForegroundColor Yellow
+
+        # Add service account credentials to key vault (Required for sensitivity label functionality due to the current Graph API restriction only supporting delegated permissions)
+        $saCreds = Get-Credential -Message "Enter Service Account credentials (To enable sensitivity label functionality). Must NOT have MFA enabled."
+        Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'sausername' -SecretValue (ConvertTo-SecureString -String $saCreds.UserName -AsPlainText -Force) | Out-Null
+        Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'sapassword' -SecretValue (ConvertTo-SecureString -String $saCreds.GetNetworkCredential().Password -AsPlainText -Force) | Out-Null
+    }
+
+   
+
     Set-AzKeyVaultAccessPolicy -VaultName $KeyVaultName -ObjectId $global:appServicePrincipalId -PermissionsToSecrets List, Get
 
     Write-Host "Finished creating/updating Key Vault and setting secrets" -ForegroundColor Green
@@ -592,6 +623,8 @@ function DeployARMTemplate {
   
         az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'processteamrequest.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "tenantId=$TenantId" "requestsSiteUrl=$requestsSiteUrl" "requestsListId=$global:requestsListId" "requestSettingsListsId=$global:requestSettingsListId" "location=$global:location" "serviceAccountUPN=$ServiceAccountUPN"
 
+        az deployment group create --resource-group $resourceGroupName --subscription $SubscriptionId --template-file 'synclabels.json' --parameters "resourceGroupName=$resourceGroupName" "subscriptionId=$subscriptionId" "tenantId=$TenantId" "location=$location" "requestsSiteUrl=$requestsSiteUrl" "ipLabelsListId=$global:ipLabelsListId"
+        
         Write-Host "Finished deploying logic apps" -ForegroundColor Green
     }
     catch {
