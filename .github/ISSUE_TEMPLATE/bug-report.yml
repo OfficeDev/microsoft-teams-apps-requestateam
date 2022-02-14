@@ -43,15 +43,15 @@ body:
         3.
 
 - type: textarea,
-id: expected-results
-validations:
+  id: expected-results
+  validations:
     required: true
   attributes:
-  label: Expected results
-  placeholder: What should have happened
-    description: |
-      Provide a description of what you expected to happen.
-      
+      label: Expected results
+      placeholder: What should have happened
+      description: |
+       Provide a description of what you expected to happen.
+
 - type: textarea
   id: actual-results
   attributes:
@@ -75,8 +75,8 @@ validations:
     required: true
 
 - type: dropdown
-    id: component
-    attributes:
+  id: component
+  attributes:
       label: Solution component
       description: Let us know what component of the solution you are having trouble with
       options:
@@ -84,12 +84,12 @@ validations:
       - Power Automate Flows
       - Deployment Script
       - Logic Apps
-    validations:
+  validations:
       required: true
 
 - type: dropdown
-    id: os
-    attributes:
+  id: os
+  attributes:
       label: Operating system (environment)
       description: Provide the operating system that you are using
       options:
@@ -98,14 +98,14 @@ validations:
         - Linux
         - Azure Cloud Shell
         - Other
-    validations:
+  validations:
       required: true
 
 - type: textarea
-    id: info
-    attributes:
+  id: info
+  attributes:
       label: Additional Info
       description: |
         Provide any additional information that may help with the identification of the root cause of this issue
-    validations:
+  validations:
       required: false
