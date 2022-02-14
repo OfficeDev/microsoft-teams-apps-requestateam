@@ -31,7 +31,7 @@ body:
   id: steps
   attributes:
     label: Steps to reproduce
-    description: How do you reproduce this? Please provide as much step-by-step detail as possible.
+    description: Provide the steps you have taken so that we can reproduce the error.
     value: |
       1.
       2.
@@ -42,8 +42,30 @@ body:
 - type: textarea
   id: expected
   attributes:
-    label: Expected behavior
-    description: What did you expect to happen when the reproduce steps are followed?
-    placeholder: Tell us what you expected to see!
+    label: Expected results
+    description: Provide a description of what you expected to happen.
+    placeholder: What should have happened
   validations:
     required: true
+
+- type: textarea
+  id: actual-results
+  attributes:
+    label: Actual Results
+    description: Provide a description of what actually happens.
+    placeholder: Tell us what you see
+  validations:
+    required: true
+
+- type: dropdown
+  id: component
+  attributes:
+      label: Solution component
+      description: Let us know what component of the solution you are having trouble with.
+      options:
+      - Power App
+      - Power Automate Flows
+      - Deployment Script
+      - Logic Apps
+  validations:
+      required: true
