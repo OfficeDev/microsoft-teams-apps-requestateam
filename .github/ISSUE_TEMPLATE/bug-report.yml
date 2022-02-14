@@ -1,6 +1,6 @@
 name: 🐞 Bug or error report
 description: Report a suspected bug or error.
-labels: ['Needs: Triage :mag:', 'type:bug-suspected']
+labels: [':mag: Needs triage', 'type:bug-suspected']
 
 body:
 - type: markdown
