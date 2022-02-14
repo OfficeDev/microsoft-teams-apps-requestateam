@@ -19,7 +19,7 @@ body:
   validations:
     required: true
     
- - type: textarea
+- type: textarea
   id: info
   attributes:
     label: Additional Info
