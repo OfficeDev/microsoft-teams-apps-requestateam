@@ -49,8 +49,7 @@ body:
   attributes:
       label: Expected results
       placeholder: What should have happened
-      description: |
-       Provide a description of what you expected to happen.
+      description: Provide a description of what you expected to happen.
 
 - type: textarea
   id: actual-results
