@@ -87,7 +87,7 @@ validations:
     validations:
       required: true
 
-      - type: dropdown
+- type: dropdown
     id: os
     attributes:
       label: Operating system (environment)
@@ -101,7 +101,7 @@ validations:
     validations:
       required: true
 
-       - type: textarea
+- type: textarea
     id: info
     attributes:
       label: Additional Info
