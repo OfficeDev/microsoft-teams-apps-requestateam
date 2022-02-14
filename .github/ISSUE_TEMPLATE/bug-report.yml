@@ -69,3 +69,26 @@ body:
       - Logic Apps
   validations:
       required: true
+
+- type: dropdown
+  id: os
+  attributes:
+      label: Operating system (environment)
+      description: Provide the operating system that you are using to run the deployment script on.
+      options:
+        - Windows
+        - Windows Server
+        - macOS
+        - Linux
+        - Other
+  validations:
+      required: true
+
+- type: textarea
+  id: info
+  attributes:
+      label: Additional Info
+      description: |
+        Provide any additional information that may help with the identification of the root cause of this issue.
+  validations:
+      required: false
