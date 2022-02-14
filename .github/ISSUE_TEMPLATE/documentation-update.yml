@@ -1,4 +1,4 @@
-name: "🚀 Documentation Update"
+name: "📃 Documentation Update"
 description: Help us provide accurate and concise documentation
 labels: ['🔍 needs triage', 'documentation']
 
@@ -13,7 +13,7 @@ body:
 - type: textarea
   id: inaccuracy
   attributes:
-    label: Documentation inaccuracy/update
+    label: Documentation inaccuracy
     description: Provide a description of the inaccuracy or update to the documentation.
     placeholder: A clear and concise description
   validations:
