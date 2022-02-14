@@ -37,7 +37,7 @@ body:
     label: Steps to reproduce
     placeholder: How can we reproduce this issue
     description: Provide the steps you have taken so that we can reproduce the error.
-        value: |
+    value: |
         1.
         2.
         3.
@@ -62,7 +62,7 @@ validations:
     required: true
 
 - type: textarea
-  id: steps
+  id: repro
   attributes:
     label: Steps to reproduce
     description: How do you reproduce this? Please provide as much step-by-step detail as possible.
@@ -70,6 +70,7 @@ validations:
       1.
       2.
       3.
+      ...
   validations:
     required: true
 
