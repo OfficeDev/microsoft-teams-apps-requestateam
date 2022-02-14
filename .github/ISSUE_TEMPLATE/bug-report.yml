@@ -37,7 +37,7 @@ body:
     label: Steps to reproduce
     placeholder: How can we reproduce this issue
     description: Provide the steps you have taken so that we can reproduce the error.
-        value: | 
+        value: |
         1.
         2.
         3.
