@@ -17,8 +17,6 @@ body:
       - Screenshots or mockups are always helpful.
 
       Please provide the following details about the issue you encountered. 
-      
-      ### Suggestion
 
 - type: textarea
   id: suggestion
