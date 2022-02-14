@@ -1,0 +1,30 @@
+name: "🚀 Feature Request"
+description: Suggest a feature to make Request-a-team even better
+labels: ['🔍 needs triage', 'enhancement']
+
+body:
+- type: markdown
+  attributes:
+    value: |
+      - [x] Feature
+
+      Thank you 💖 for your feature request! 
+      
+      - All ideas are welcome - let's build something cool together!
+      - This repo is maintained by volunteers. Please be courteous and patient as responses can take time. 🙂
+      - Remember to include sufficient details and context.
+      - If you have multiple feature requests, please submit them in separate issues.
+      - Screenshots or mockups are always helpful.
+
+      Please provide the following details about the issue you encountered. 
+      
+      ### Suggestion
+
+- type: textarea
+  id: suggestion
+  attributes:
+    label: Suggestion
+    description: What functionality would you like to see.
+    placeholder: The more details, the better
+  validations:
+    required: true
