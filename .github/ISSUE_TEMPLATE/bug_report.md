@@ -1,110 +1,38 @@
-name: 🐞 Bug or error report
-description: Report a suspected bug or error.
-labels: ['Needs: Triage :mag:', 'type:bug-suspected']
+---
+name: Bug report
+about: Create a report to help us improve
+title: ''
+labels: ''
+assignees: ''
 
-body:
-- type: markdown
-  attributes:
-    value: |
-      - [x] Bug
+---
 
-      Thank you for reporting a bug! Use the sections below to submit a bug **only**.
-      
-      - Follow our guidance on [How To Create Good Issues](https://github.com/pnp/powerapps-samples/wiki/How-to-Create-Good-Issues).
-      - All bug reports are welcome - we want to fix them!
-      - This repo is maintained by volunteers. Please be courteous and patient as responses can take time. 🙂
-      - Remember to include sufficient details and context.
-      - If you have multiple questions, suggestions, or bugs, please submit them in separate issues.
-      - We accept pull requests. If you know how to fix it - go ahead! Fork the repo and submit a PR and we can take a look at it. 
+**Describe the bug**
+A clear and concise description of what the bug is.
 
-      Please provide the following details about the issue you encountered.  *Issues that do not provide the information requested in this form will be flagged as **incomplete** & automatically closed.*
+**To Reproduce**
+Steps to reproduce the behavior:
+1. Go to '...'
+2. Click on '....'
+3. Scroll down to '....'
+4. See error
 
-- type: textarea
-  id: description
-  validations:
-    required: true
-  attributes:
-    label: Description,
-    placeholder: Tell us in brief what is happening
-    description: |
-        Provide a short description of the issue you are facing.
+**Expected behavior**
+A clear and concise description of what you expected to happen.
 
-- type: textarea
-  id: repro-steps
-  validations:
-    required: true
-  attributes:
-    label: Steps to reproduce
-    placeholder: How can we reproduce this issue
-    description: Provide the steps you have taken so that we can reproduce the error.
-        value: | 
-        1.
-        2.
-        3.
+**Screenshots**
+If applicable, add screenshots to help explain your problem.
 
-- type: textarea,
-id: expected-results
-validations:
-    required: true
-  attributes:
-  label: Expected results
-  placeholder: "What should have happened"
-    description: |
-      Provide a description of what you expected to happen.
-      
-- type: textarea
-  id: actual-results
-  attributes:
-    label: actual-results
-    description: Provide a description of what actually happens.
-    placeholder: Tell us what you see
-  validations:
-    required: true
+**Desktop (please complete the following information):**
+ - OS: [e.g. iOS]
+ - Browser [e.g. chrome, safari]
+ - Version [e.g. 22]
 
-- type: textarea
-  id: steps
-  attributes:
-    label: Steps to reproduce
-    description: How do you reproduce this? Please provide as much step-by-step detail as possible.
-    value: |
-      1.
-      2.
-      3.
-  validations:
-    required: true
+**Smartphone (please complete the following information):**
+ - Device: [e.g. iPhone6]
+ - OS: [e.g. iOS8.1]
+ - Browser [e.g. stock browser, safari]
+ - Version [e.g. 22]
 
-- type: dropdown
-    id: component
-    attributes:
-      label: Solution component
-      description: Let us know what component of the solution you are having trouble with
-      options:
-      - Power App
-      - Power Automate Flows
-      - Deployment Script
-      - Logic Apps
-    validations:
-      required: true
-
-      - type: dropdown
-    id: os
-    attributes:
-      label: Operating system (environment)
-      description: Provide the operating system that you are using
-      options:
-        - Windows
-        - macOS
-        - Linux
-        - Azure Cloud Shell
-        - Other
-    validations:
-      required: true
-
-       - type: textarea
-    id: info
-    attributes:
-      label: Additional Info
-      description: |
-        Provide any additional information that may help with the identification of the root cause of this issue
-    validations:
-      required: false
+**Additional context**
+Add any other context about the problem here.
