@@ -26,8 +26,7 @@ body:
   attributes:
     label: Description,
     placeholder: Tell us in brief what is happening
-    description: |
-        Provide a short description of the issue you are facing.
+    description: Provide a short description of the issue you are facing.
 
 - type: textarea
   id: repro-steps
@@ -41,7 +40,7 @@ body:
         1.
         2.
         3.
-
+        
 - type: textarea,
   id: expected-results
   validations:
