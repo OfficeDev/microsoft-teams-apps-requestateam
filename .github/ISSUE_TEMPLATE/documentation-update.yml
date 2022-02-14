@@ -1,0 +1,29 @@
+name: "🚀 Documentation Update"
+description: Help us provide accurate and concise documentation
+labels: ['🔍 needs triage', 'documentation']
+
+body:
+- type: markdown
+  attributes:
+    value: |
+      - [x] Documentation update
+
+      Please provide the following details about the inaccuracy or update to the documentation. 
+
+- type: textarea
+  id: inaccuracy
+  attributes:
+    label: Documentation inaccuracy/update
+    description: Provide a description of the inaccuracy or update to the documentation.
+    placeholder: A clear and concise description
+  validations:
+    required: true
+    
+ - type: textarea
+  id: info
+  attributes:
+    label: Additional Info
+    description: Provide any additional information that is relevant. 
+    placeholder: Any other context about the problem here
+  validations:
+    required: true
