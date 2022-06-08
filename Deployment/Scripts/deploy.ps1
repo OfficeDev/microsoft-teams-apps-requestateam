@@ -802,13 +802,6 @@ Write-Host "Installed modules" -ForegroundColor Green
 
 Write-Ascii -InputObject "Request-a-Team" -ForegroundColor Magenta
 
-# Generate base64 secret for the app
-$guid = New-Guid
-
-$global:appSecret = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($guid))))
-
-$global:encodedAppSecret = [System.Web.HttpUtility]::UrlEncode($global:appSecret) 
-
 # Initialise connections - Azure Az/CLI
 Write-Host "Launching Azure sign-in..." -ForegroundColor Yellow
 $azConnect = Connect-AzAccount -Subscription $SubscriptionId -Tenant $TenantId
