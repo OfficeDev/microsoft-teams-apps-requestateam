@@ -255,16 +255,22 @@ function InstallModules ($modules) {
                 if ($spModule) {
                     throw('Please remove the older "SharePointPnPPowerShellOnline" module before the deployment can install the new cross-platform module "PnP.PowerShell"')                    
                 }
+                else {
+                    Install-Module -Name $module -Scope CurrentUser -AllowClobber -Confirm:$false -MaximumVersion 1.9.0
+                }
+            }
+            else {
+                try {
+                    Write-Host('Installing required PowerShell Module {0}' -f $module) -ForegroundColor Yellow
+                    Install-Module -Name $module -Scope CurrentUser -AllowClobber -Confirm:$false
+                }
+                catch {
+                    throw('Failed to install PowerShell module {0}: {1}' -f $module, $_.Exception.Message)
+                } 
             }
 
-            try {
-                Write-Host('Installing required PowerShell Module {0}' -f $module) -ForegroundColor Yellow
-                Install-Module -Name $module -Scope CurrentUser -AllowClobber -Confirm:$false
-            }
-            catch {
-                throw('Failed to install PowerShell module {0}: {1}' -f $module, $_.Exception.Message)
-            } 
         }
+           
     }
     
     if ($psTrustDisabled) {
@@ -527,7 +533,9 @@ function CreateAzureADApp {
             # Update azure ad app registration using CLI
             Write-Host "Azure AD App '$appName' already exists - updating existing app..." -ForegroundColor Yellow
 
-            az ad app update --id $app.appId --required-resource-accesses './manifest.json' --password $global:appSecret
+            az ad app update --id $app.appId --required-resource-accesses './manifest.json'
+
+            $global:appId = $app.appId
 
             Write-Host "Waiting for app to finish updating..."
 
@@ -541,7 +549,11 @@ function CreateAzureADApp {
             Write-Host "Creating Azure AD App - '$appName'..." -ForegroundColor Yellow
 
             # Create azure ad app registration using CLI
-            az ad app create --display-name $appName --required-resource-accesses './manifest.json' --password $global:appSecret --end-date '2299-12-31T11:59:59+00:00'
+            $app = az ad app create --display-name $appName --required-resource-accesses './manifest.json'
+
+            $appId = $app | ConvertFrom-Json | Select-Object appid
+
+            $global:appId = $appId.appid
 
             Write-Host "Waiting for app to finish creating..."
 
@@ -551,8 +563,16 @@ function CreateAzureADApp {
 
         }
 
-        $app = GetAzureADApp $appName
-        $global:appId = $app.appId
+        Write-Host "Creating secret for Azure AD App - '$appName'..." -ForegroundColor Yellow
+
+        # Create a secret - this will autogenerate a password
+        $secret = az ad app credential reset --id $global:appId
+
+        $secretValue = $secret | ConvertFrom-Json | Select-Object password
+    
+        $global:appSecret = $secretValue.password
+
+        Write-Host "Created secret for app" -ForegroundColor Green
 
         Write-Host "Granting admin content for Microsoft Graph..." -ForegroundColor Yellow
 
