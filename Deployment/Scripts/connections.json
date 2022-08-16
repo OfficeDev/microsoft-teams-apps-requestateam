@@ -28,7 +28,7 @@
             "comments": "Provision the API connections before the logic apps.",
             "type": "Microsoft.Web/connections",
             "apiVersion": "2016-06-01",
-            "name": "requestateam-spo",
+            "name": "[concat('con-requestateam-prod-',parameters('location'),'-spo')]",
             "location": "[parameters('location')]",
             "properties": {
                 "displayName": "Request a team - SharePoint Online",
@@ -42,7 +42,7 @@
         {
             "type": "Microsoft.Web/connections",
             "apiVersion": "2016-06-01",
-            "name": "requestateam-o365outlook",
+            "name": "[concat('con-requestateam-prod-',parameters('location'),'-o365outlook')]",
             "location": "[parameters('location')]",
             "properties": {
                 "displayName": "Request a team - Office 365 Outlook",
@@ -56,7 +56,7 @@
         {
             "type": "Microsoft.Web/connections",
             "apiVersion": "2016-06-01",
-            "name": "requestateam-o365users",
+            "name": "[concat('con-requestateam-prod-',parameters('location'),'-o365users')]",
             "location": "[parameters('location')]",
             "properties": {
                 "displayName": "Request a team - Office 365 Users",
@@ -70,7 +70,7 @@
         {
             "type": "Microsoft.Web/connections",
             "apiVersion": "2016-06-01",
-            "name": "requestateam-teams",
+            "name": "[concat('con-requestateam-prod-',parameters('location'),'-teams')]",
             "location": "[parameters('location')]",
             "properties": {
                 "displayName": "Request a team - Microsoft Teams",

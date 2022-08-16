@@ -31,7 +31,7 @@
          {
             "type": "Microsoft.Web/connections",
             "apiVersion": "2016-06-01",
-            "name": "requestateam-kv",
+            "name": "[concat('con-requestateam-prod-',parameters('location'),'-kv')]",
             "location": "[parameters('location')]",
             "properties": {
                 "displayName": "Request a team - Key Vault",

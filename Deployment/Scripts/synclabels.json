@@ -34,7 +34,7 @@
         {
             "type": "Microsoft.Logic/workflows",
             "apiVersion": "2017-07-01",
-            "name": "SyncLabels",
+            "name": "[concat('logic-requestateam-prod-',parameters('location'),'-synclabels')]",
             "location": "[parameters('location')]",
             "properties": {
                 "state": "Enabled",
@@ -320,13 +320,13 @@
                     "$connections": {
                         "value": {
                             "keyvault": {
-                                "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/requestateam-kv')]",
-                                "connectionName": "keyvault",
+                                "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/','con-requestateam-prod-',parameters('location'),'-kv')]",
+                                "connectionName": "[concat('con-requestateam-prod-',parameters('location'),'-kv')]",
                                 "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/keyvault')]"
                             },
                             "sharepointonline": {
-                                "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/requestateam-spo')]",
-                                "connectionName": "requestateam-spo",
+                                "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/','con-requestateam-prod-',parameters('location'),'-spo')]",
+                                "connectionName": "[concat('con-requestateam-prod-',parameters('location'),'-spo')]",
                                 "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/sharepointonline')]"
                             }
                         }

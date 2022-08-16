@@ -42,7 +42,7 @@
         {
             "type": "Microsoft.Logic/workflows",
             "apiVersion": "2017-07-01",
-            "name": "ProcessTeamRequest",
+            "name": "[concat('logic-requestateam-prod-',parameters('location'),'-processteamrequest')]",
             "location": "[parameters('location')]",
             "properties": {
                 "state": "Enabled",
@@ -2299,28 +2299,28 @@
                 "$connections": {
                     "value": {
                            "keyvault": {
-                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/requestateam-kv')]",
-                                "connectionName": "keyvault",
+                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/','con-requestateam-prod-',parameters('location'),'-kv')]",
+                                "connectionName": "[concat('con-requestateam-prod-',parameters('location'),'-kv')]",
                                  "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/keyvault')]"
                             },
                         "office365": {
-                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/requestateam-o365outlook')]",
-                            "connectionName": "requestateam-o365outlook",
+                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/','con-requestateam-prod-',parameters('location'),'-o365outlook')]",
+                            "connectionName": "[concat('con-requestateam-prod-',parameters('location'),'-o365outlook')]",
                             "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/office365')]"
                         },
                         "office365users": {
-                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/requestateam-o365users')]",
-                            "connectionName": "requestateam-o365users",
+                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/','con-requestateam-prod-',parameters('location'),'-o365users')]",
+                            "connectionName": "[concat('con-requestateam-prod-',parameters('location'),'-o365users')]",
                             "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/office365users')]"
                         },
                         "sharepointonline": {
-                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/requestateam-spo')]",
-                            "connectionName": "requestateam-spo",
+                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/','con-requestateam-prod-',parameters('location'),'-spo')]",
+                            "connectionName": "[concat('con-requestateam-prod-',parameters('location'),'-spo')]",
                             "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/sharepointonline')]"
                         },
                         "teams": {
-                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/requestateam-teams')]",
-                            "connectionName": "requestateam-teams",
+                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/','con-requestateam-prod-',parameters('location'),'-teams')]",
+                            "connectionName": "[concat('con-requestateam-prod-',parameters('location'),'-teams')]",
                             "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/teams')]"
                               }
                         }

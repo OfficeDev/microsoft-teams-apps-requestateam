@@ -25,7 +25,7 @@
         {
             "type": "Microsoft.Logic/workflows",
             "apiVersion": "2017-07-01",
-            "name": "CheckSiteExists",
+            "name": "[concat('logic-requestateam-prod-',parameters('location'),'-checksiteexists')]",
             "location": "[parameters('location')]",
             "properties": {
                 "state": "Enabled",
@@ -309,8 +309,8 @@
                     "$connections": {
                         "value": {
                                     "keyvault": {
-                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/requestateam-kv')]",
-                                "connectionName": "requestateam-kv",
+                            "connectionId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Web/connections/','con-requestateam-prod-',parameters('location'),'-kv')]",
+                                "connectionName": "[concat('con-requestateam-prod-',parameters('location'),'-kv')]",
                                  "id": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Web/locations/',parameters('location'),'/managedApis/keyvault')]"
                             }
                         }

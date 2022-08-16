@@ -223,12 +223,6 @@ $tenantAdminUrl = "https://$tenantName-admin.sharepoint.com"
 $requestsSiteAlias = $RequestsSiteName -replace (' ', '')
 $requestsSiteUrl = "https://$tenantName.sharepoint.com/$ManagedPath/$requestsSiteAlias"
 
-# API connection names
-$spoConnectionName = "requestateam-spo"
-$o365OutlookConnectionName = "requestateam-o365outlook"
-$o365UsersConnectionName = "requestateam-o365users"
-$teamsConnectionName = "requestateam-teams"
-
 # Global variables
 $global:context = $null
 $global:requestsListId = $null
@@ -703,7 +697,11 @@ function AuthoriseLogicAppConnection($resourceId) {
 }
 
 function AuthoriseLogicAppConnections() {
-
+    # API connection names
+    $spoConnectionName = -join("con-requestateam-prod-",$global:location,"-spo")
+    $o365OutlookConnectionName = -join("con-requestateam-prod-",$global:location,"-o365outlook")
+    $o365UsersConnectionName = -join("con-requestateam-prod-",$global:location,"-o365users")
+    $teamsConnectionName = -join("con-requestateam-prod-",$global:location,"-teams")
     Write-Host "### LOGIC APP CONNECTIONS AUTHORISATION ###`nStarting authorisation for Logic App Connections`nPlease authenticate with the Service Account - $ServiceAccountUPN" -ForegroundColor Yellow
     $spoconnection = Get-AzResource -ResourceType "Microsoft.Web/connections" -ResourceGroupName $resourceGroupName -Name $spoConnectionName
 
