@@ -11,6 +11,8 @@ urlFragment: microsoft-teams-apps-requestateam
 
 # Request-a-team App Template
 
+## IMPORTANT NOTICE - This repo is no longer maintained and we cannot guarantee issues will be responded to. For a more up-to-date provisioning tool that provisions Teams AND much more please check out 'Provision Assist' - https://github.com/pnp/provision-assist-m365/. Provision Assist is an actively maintained project with ongoing updates.
+
 | [Documentation](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Home) | [Deployment guide](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Deployment-Guide) | [Architecture](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Solution-Overview) | [Teams Templates](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Teams-Templates) | [Naming Conventions](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Naming-Conventions) | [Sensitivity Labels](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Sensitivity-Labels) | [Refreshing Expired Secrets](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/Refreshing-Expired-Secrets) | [V2](https://github.com/OfficeDev/microsoft-teams-apps-requestateam/wiki/V2#request-a-team-v2)
 | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
 
